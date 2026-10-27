@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Load Project/Library Folder">
+	<defs>
+		<linearGradient id="bg" x1="0.05" y1="0" x2="0.95" y2="1">
+			<stop offset="0" stop-color="#5B7CFF" />
+			<stop offset="0.52" stop-color="#7A5CF7" />
+			<stop offset="1" stop-color="#9B4FF0" />
+		</linearGradient>
+		<radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+			<stop offset="0" stop-color="#FFFFFF" stop-opacity="0.3" />
+			<stop offset="1" stop-color="#FFFFFF" stop-opacity="0" />
+		</radialGradient>
+		<linearGradient id="front" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#FFFFFF" />
+			<stop offset="1" stop-color="#E6ECFF" />
+		</linearGradient>
+		<linearGradient id="arrow" x1="0" y1="0" x2="0.4" y2="1">
+			<stop offset="0" stop-color="#4F6BFF" />
+			<stop offset="1" stop-color="#8B5CF6" />
+		</linearGradient>
+		<clipPath id="clip">
+			<rect width="512" height="512" rx="116" ry="116" />
+		</clipPath>
+	</defs>
+
+	<g clip-path="url(#clip)">
+		<rect width="512" height="512" fill="url(#bg)" />
+		<circle cx="418" cy="82" r="196" fill="url(#glow)" />
+		<circle cx="86" cy="452" r="150" fill="#FFFFFF" fill-opacity="0.07" />
+
+		<!-- folder tab -->
+		<rect x="104" y="166" width="142" height="48" rx="22" ry="22" fill="#FFFFFF" />
+
+		<!-- folder body -->
+		<rect x="104" y="204" width="304" height="144" rx="36" ry="36" fill="url(#front)" />
+
+		<!-- import arrow inside the folder -->
+		<path d="M236 232h40v44h32L256 320 204 276h32z" fill="url(#arrow)" />
+	</g>
+</svg>

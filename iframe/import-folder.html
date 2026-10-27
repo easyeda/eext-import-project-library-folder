@@ -1,0 +1,2680 @@
+<!doctype html>
+<html lang="zh-Hans">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Load Project/Library Folder</title>
+		<style>
+			:root {
+				--accent: #4f6bff;
+				--accent-2: #8b5cf6;
+				--accent-soft: rgba(79, 107, 255, 0.1);
+				--ok: #16a34a;
+				--ok-soft: rgba(22, 163, 74, 0.12);
+				--err: #e11d48;
+				--err-soft: rgba(225, 29, 72, 0.1);
+				--warn: #d97706;
+				--ink: #101828;
+				--ink-2: #475467;
+				--ink-3: #98a2b3;
+				--line: #e7eaf3;
+				--line-strong: #d6dbe9;
+				--bg: #f5f7fc;
+				--card: #ffffff;
+				--radius: 14px;
+				--shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+				--shadow-md: 0 8px 24px rgba(16, 24, 40, 0.08);
+				--shadow-lg: 0 18px 44px rgba(16, 24, 40, 0.14);
+			}
+
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+				font-size: 13px;
+				color: var(--ink);
+				background: var(--bg);
+				-webkit-font-smoothing: antialiased;
+			}
+
+			button,
+			select,
+			input {
+				font-family: inherit;
+				font-size: inherit;
+				color: inherit;
+			}
+
+			.app {
+				display: flex;
+				flex-direction: column;
+				width: 100%;
+				height: 100%;
+			}
+
+			/* ---------- header ---------- */
+			.hero {
+				position: relative;
+				display: flex;
+				align-items: center;
+				gap: 14px;
+				padding: 18px 22px 16px;
+				background: linear-gradient(125deg, #4f6bff 0%, #7257f8 55%, #8b5cf6 100%);
+				color: #fff;
+				overflow: hidden;
+				flex: none;
+			}
+
+			.hero::after {
+				content: '';
+				position: absolute;
+				inset: -60% -20% auto auto;
+				width: 320px;
+				height: 320px;
+				background: radial-gradient(circle, rgba(255, 255, 255, 0.28), transparent 62%);
+				pointer-events: none;
+			}
+
+			.hero-logo {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 42px;
+				height: 42px;
+				border-radius: 12px;
+				background: rgba(255, 255, 255, 0.18);
+				border: 1px solid rgba(255, 255, 255, 0.32);
+				backdrop-filter: blur(4px);
+				flex: none;
+			}
+
+			.hero-logo svg {
+				width: 24px;
+				height: 24px;
+			}
+
+			.hero-text {
+				min-width: 0;
+			}
+
+			.hero-title {
+				font-size: 15.5px;
+				font-weight: 600;
+				letter-spacing: 0.2px;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			.hero-sub {
+				margin-top: 3px;
+				font-size: 11.5px;
+				color: rgba(255, 255, 255, 0.82);
+			}
+
+			/* ---------- steps ---------- */
+			.steps {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				padding: 12px 22px;
+				background: #fff;
+				border-bottom: 1px solid var(--line);
+				flex: none;
+			}
+
+			.step-chip {
+				display: flex;
+				align-items: center;
+				gap: 7px;
+				padding: 5px 11px 5px 6px;
+				border-radius: 999px;
+				font-size: 12px;
+				color: var(--ink-3);
+				background: #f2f4fa;
+				transition: all 0.22s ease;
+				white-space: nowrap;
+			}
+
+			.step-chip .idx {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				width: 18px;
+				height: 18px;
+				border-radius: 50%;
+				font-size: 11px;
+				font-weight: 600;
+				background: #fff;
+				color: var(--ink-3);
+				box-shadow: var(--shadow-sm);
+			}
+
+			.step-chip.active {
+				color: #fff;
+				background: linear-gradient(120deg, var(--accent), var(--accent-2));
+				box-shadow: 0 6px 16px rgba(79, 107, 255, 0.28);
+			}
+
+			.step-chip.active .idx {
+				color: var(--accent);
+			}
+
+			.step-chip.done {
+				color: var(--accent);
+				background: var(--accent-soft);
+			}
+
+			.step-arrow {
+				width: 14px;
+				height: 1.5px;
+				background: var(--line-strong);
+				border-radius: 2px;
+			}
+
+			/* ---------- main ---------- */
+			main {
+				position: relative;
+				flex: 1 1 auto;
+				min-height: 0;
+				padding: 18px 22px;
+				overflow: hidden;
+			}
+
+			.screen {
+				display: none;
+				flex-direction: column;
+				width: 100%;
+				height: 100%;
+				min-height: 0;
+				animation: fade-in 0.22s ease;
+			}
+
+			.screen.active {
+				display: flex;
+			}
+
+			@keyframes fade-in {
+				from {
+					opacity: 0;
+					transform: translateY(6px);
+				}
+				to {
+					opacity: 1;
+					transform: none;
+				}
+			}
+
+			/* ---------- drop zone ---------- */
+			.dropzone {
+				position: relative;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				flex: 1 1 auto;
+				min-height: 0;
+				padding: 26px;
+				border: 1.8px dashed var(--line-strong);
+				border-radius: 18px;
+				background:
+					radial-gradient(circle at 50% 0%, rgba(79, 107, 255, 0.07), transparent 60%),
+					#fff;
+				text-align: center;
+				cursor: pointer;
+				transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+			}
+
+			.dropzone:hover {
+				border-color: var(--accent);
+				box-shadow: var(--shadow-md);
+			}
+
+			.dropzone.dragging {
+				border-color: var(--accent);
+				border-style: solid;
+				background: linear-gradient(180deg, rgba(79, 107, 255, 0.1), rgba(139, 92, 246, 0.06));
+				box-shadow: 0 0 0 4px rgba(79, 107, 255, 0.12), var(--shadow-lg);
+				transform: scale(1.004);
+			}
+
+			.dz-icon {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 72px;
+				height: 72px;
+				border-radius: 22px;
+				background: linear-gradient(140deg, rgba(79, 107, 255, 0.14), rgba(139, 92, 246, 0.12));
+				color: var(--accent);
+			}
+
+			.dz-icon svg {
+				width: 38px;
+				height: 38px;
+			}
+
+			.dz-title {
+				font-size: 15px;
+				font-weight: 600;
+			}
+
+			.dz-or {
+				font-size: 11.5px;
+				color: var(--ink-3);
+			}
+
+			.dz-hints {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				justify-content: center;
+				gap: 6px 16px;
+				margin-top: 2px;
+				font-size: 11.5px;
+				color: var(--ink-2);
+			}
+
+			.dz-hint {
+				display: inline-flex;
+				align-items: center;
+				gap: 5px;
+			}
+
+			.dz-hint svg {
+				width: 13px;
+				height: 13px;
+				color: var(--ok);
+				flex: none;
+			}
+
+			.dz-picked {
+				display: none;
+				align-items: center;
+				gap: 10px;
+				width: 100%;
+				max-width: 560px;
+				margin-top: 4px;
+				padding: 10px 14px;
+				border-radius: 12px;
+				background: #f4f7ff;
+				border: 1px solid #dbe3ff;
+				text-align: left;
+			}
+
+			.dz-picked.show {
+				display: flex;
+			}
+
+			.dz-picked-icon {
+				color: var(--accent);
+				flex: none;
+				display: flex;
+			}
+
+			.dz-picked-name {
+				font-weight: 600;
+				font-size: 12.5px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.dz-picked-meta {
+				font-size: 11px;
+				color: var(--ink-2);
+				margin-top: 2px;
+			}
+
+			.dz-picked-clear {
+				margin-left: auto;
+				border: none;
+				background: transparent;
+				color: var(--ink-3);
+				cursor: pointer;
+				padding: 4px;
+				border-radius: 8px;
+				display: flex;
+			}
+
+			.dz-picked-clear:hover {
+				color: var(--err);
+				background: var(--err-soft);
+			}
+
+			/* ---------- generic ---------- */
+			.btn {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 7px;
+				height: 34px;
+				padding: 0 16px;
+				border-radius: 10px;
+				border: 1px solid var(--line-strong);
+				background: #fff;
+				color: var(--ink);
+				font-size: 12.5px;
+				font-weight: 500;
+				cursor: pointer;
+				transition: all 0.16s ease;
+				white-space: nowrap;
+			}
+
+			.btn:hover:not(:disabled) {
+				background: #f7f9ff;
+				border-color: var(--accent);
+				color: var(--accent);
+			}
+
+			.btn:disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+			}
+
+			.btn-primary {
+				border: none;
+				color: #fff;
+				background: linear-gradient(120deg, var(--accent), var(--accent-2));
+				box-shadow: 0 6px 16px rgba(79, 107, 255, 0.26);
+			}
+
+			.btn-primary:hover:not(:disabled) {
+				color: #fff;
+				filter: brightness(1.06);
+				box-shadow: 0 8px 20px rgba(79, 107, 255, 0.34);
+			}
+
+			.btn-ghost {
+				border-color: transparent;
+				background: transparent;
+				color: var(--ink-2);
+			}
+
+			.btn-ghost:hover:not(:disabled) {
+				background: #eef1f8;
+				border-color: transparent;
+				color: var(--ink);
+			}
+
+			.btn svg {
+				width: 15px;
+				height: 15px;
+			}
+
+			/* ---------- review ---------- */
+			.review {
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) 288px;
+				gap: 14px;
+				flex: 1 1 auto;
+				min-height: 0;
+			}
+
+			.panel {
+				display: flex;
+				flex-direction: column;
+				min-height: 0;
+				background: var(--card);
+				border: 1px solid var(--line);
+				border-radius: var(--radius);
+				box-shadow: var(--shadow-sm);
+				overflow: hidden;
+			}
+
+			.panel-head {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				padding: 11px 14px;
+				border-bottom: 1px solid var(--line);
+				flex: none;
+				background: #fbfcff;
+			}
+
+			.panel-title {
+				font-size: 12.5px;
+				font-weight: 600;
+			}
+
+			.panel-count {
+				padding: 1px 7px;
+				border-radius: 999px;
+				font-size: 11px;
+				color: var(--accent);
+				background: var(--accent-soft);
+				font-weight: 600;
+			}
+
+			.panel-body {
+				flex: 1 1 auto;
+				min-height: 0;
+				overflow: auto;
+				padding: 10px;
+			}
+
+			.panel-body::-webkit-scrollbar,
+			.run-list::-webkit-scrollbar {
+				width: 8px;
+			}
+
+			.panel-body::-webkit-scrollbar-thumb,
+			.run-list::-webkit-scrollbar-thumb {
+				background: #d8deeb;
+				border-radius: 999px;
+			}
+
+			.panel-body::-webkit-scrollbar-thumb:hover,
+			.run-list::-webkit-scrollbar-thumb:hover {
+				background: #c3cbdd;
+			}
+
+			.unit {
+				display: flex;
+				align-items: flex-start;
+				gap: 10px;
+				padding: 10px 11px;
+				border-radius: 11px;
+				border: 1px solid transparent;
+				cursor: pointer;
+				transition: background 0.15s ease, border-color 0.15s ease;
+			}
+
+			.unit:hover {
+				background: #f7f9ff;
+				border-color: #e3e9ff;
+			}
+
+			.unit.checked {
+				background: #f4f7ff;
+				border-color: #dbe3ff;
+			}
+
+			.unit-check {
+				position: relative;
+				flex: none;
+				margin-top: 2px;
+				width: 16px;
+				height: 16px;
+				border-radius: 5px;
+				border: 1.6px solid var(--line-strong);
+				background: #fff;
+				transition: all 0.15s ease;
+			}
+
+			.unit.checked .unit-check {
+				border-color: var(--accent);
+				background: var(--accent);
+			}
+
+			.unit.checked .unit-check::after {
+				content: '';
+				position: absolute;
+				left: 4.4px;
+				top: 1.2px;
+				width: 4.5px;
+				height: 8.5px;
+				border: solid #fff;
+				border-width: 0 2px 2px 0;
+				transform: rotate(42deg);
+			}
+
+			.unit-icon {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				flex: none;
+				width: 32px;
+				height: 32px;
+				border-radius: 9px;
+			}
+
+			.unit-icon svg {
+				width: 17px;
+				height: 17px;
+			}
+
+			.unit-icon.project {
+				color: #2563eb;
+				background: rgba(37, 99, 235, 0.1);
+			}
+
+			.unit-icon.library {
+				color: #7c3aed;
+				background: rgba(124, 58, 237, 0.1);
+			}
+
+			.unit-icon.invalid {
+				color: var(--err);
+				background: var(--err-soft);
+			}
+
+			.unit-main {
+				min-width: 0;
+				flex: 1 1 auto;
+			}
+
+			.unit-top {
+				display: flex;
+				align-items: center;
+				gap: 7px;
+				min-width: 0;
+			}
+
+			.unit-name {
+				font-size: 12.5px;
+				font-weight: 600;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.badge {
+				flex: none;
+				padding: 1px 7px;
+				border-radius: 999px;
+				font-size: 10.5px;
+				font-weight: 600;
+				letter-spacing: 0.2px;
+			}
+
+			.badge.project {
+				color: #1d4ed8;
+				background: rgba(37, 99, 235, 0.12);
+			}
+
+			.badge.library {
+				color: #6d28d9;
+				background: rgba(124, 58, 237, 0.12);
+			}
+
+			.badge.invalid {
+				color: var(--err);
+				background: var(--err-soft);
+			}
+
+			.unit-path {
+				margin-top: 3px;
+				font-size: 11px;
+				color: var(--ink-3);
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				direction: rtl;
+				text-align: left;
+			}
+
+			.unit-meta {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 4px 10px;
+				margin-top: 5px;
+				font-size: 11px;
+				color: var(--ink-2);
+			}
+
+			.unit-meta span {
+				display: inline-flex;
+				align-items: center;
+				gap: 4px;
+			}
+
+			.unit-meta svg {
+				width: 12px;
+				height: 12px;
+				color: var(--ink-3);
+			}
+
+			/* ---------- owner form ---------- */
+			.form {
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+				padding: 13px 14px;
+			}
+
+			.field {
+				display: flex;
+				flex-direction: column;
+				gap: 5px;
+			}
+
+			.field label {
+				font-size: 11.5px;
+				font-weight: 600;
+				color: var(--ink-2);
+			}
+
+			.select-wrap {
+				position: relative;
+			}
+
+			.select-wrap::after {
+				content: '';
+				position: absolute;
+				right: 12px;
+				top: 50%;
+				width: 6px;
+				height: 6px;
+				border: solid var(--ink-3);
+				border-width: 0 1.4px 1.4px 0;
+				transform: translateY(-70%) rotate(45deg);
+				pointer-events: none;
+			}
+
+			select {
+				width: 100%;
+				height: 33px;
+				padding: 0 30px 0 10px;
+				border-radius: 9px;
+				border: 1px solid var(--line-strong);
+				background: #fff;
+				cursor: pointer;
+				appearance: none;
+				outline: none;
+				transition: border-color 0.15s ease, box-shadow 0.15s ease;
+				text-overflow: ellipsis;
+			}
+
+			select:hover:not(:disabled) {
+				border-color: var(--accent);
+			}
+
+			select:focus {
+				border-color: var(--accent);
+				box-shadow: 0 0 0 3px rgba(79, 107, 255, 0.14);
+			}
+
+			select:disabled {
+				opacity: 0.6;
+				cursor: not-allowed;
+			}
+
+			.hint {
+				font-size: 10.5px;
+				color: var(--ink-3);
+				line-height: 1.5;
+			}
+
+			.switch-row {
+				display: flex;
+				align-items: flex-start;
+				gap: 8px;
+				padding-top: 2px;
+				cursor: pointer;
+			}
+
+			.switch-row input {
+				margin-top: 1.5px;
+				width: 14px;
+				height: 14px;
+				accent-color: var(--accent);
+				cursor: pointer;
+				flex: none;
+			}
+
+			.switch-row span {
+				font-size: 11.5px;
+				color: var(--ink-2);
+				line-height: 1.45;
+			}
+
+			.divider {
+				height: 1px;
+				background: var(--line);
+				margin: 2px 0;
+			}
+
+			/* ---------- run ---------- */
+			.run-wrap {
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+				flex: 1 1 auto;
+				min-height: 0;
+			}
+
+			.run-summary {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				padding: 12px 15px;
+				background: var(--card);
+				border: 1px solid var(--line);
+				border-radius: var(--radius);
+				box-shadow: var(--shadow-sm);
+				flex: none;
+			}
+
+			.run-summary-icon {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 34px;
+				height: 34px;
+				border-radius: 10px;
+				background: var(--accent-soft);
+				color: var(--accent);
+				flex: none;
+			}
+
+			.run-summary-icon svg {
+				width: 18px;
+				height: 18px;
+			}
+
+			.run-summary-text {
+				min-width: 0;
+				flex: 1 1 auto;
+			}
+
+			.run-summary-title {
+				font-size: 12.5px;
+				font-weight: 600;
+			}
+
+			.run-summary-sub {
+				margin-top: 2px;
+				font-size: 11px;
+				color: var(--ink-2);
+			}
+
+			.run-bar {
+				margin-left: auto;
+				width: 132px;
+				height: 5px;
+				border-radius: 999px;
+				background: #eef1f8;
+				overflow: hidden;
+				flex: none;
+			}
+
+			.run-bar i {
+				display: block;
+				width: 0;
+				height: 100%;
+				border-radius: 999px;
+				background: linear-gradient(90deg, var(--accent), var(--accent-2));
+				transition: width 0.3s ease;
+			}
+
+			.run-list {
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+				flex: 1 1 auto;
+				min-height: 0;
+				overflow: auto;
+				padding-right: 2px;
+			}
+
+			.run-item {
+				padding: 11px 13px;
+				background: var(--card);
+				border: 1px solid var(--line);
+				border-radius: 12px;
+				box-shadow: var(--shadow-sm);
+				transition: border-color 0.2s ease;
+			}
+
+			.run-item.running {
+				border-color: #c7d3ff;
+				box-shadow: 0 6px 18px rgba(79, 107, 255, 0.1);
+			}
+
+			.run-item.ok {
+				border-color: rgba(22, 163, 74, 0.34);
+			}
+
+			.run-item.err {
+				border-color: rgba(225, 29, 72, 0.34);
+			}
+
+			.run-head {
+				display: flex;
+				align-items: center;
+				gap: 9px;
+			}
+
+			.run-name {
+				font-size: 12.5px;
+				font-weight: 600;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				min-width: 0;
+			}
+
+			.run-state {
+				margin-left: auto;
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				font-size: 11.5px;
+				color: var(--ink-2);
+				flex: none;
+				white-space: nowrap;
+			}
+
+			.run-state.ok {
+				color: var(--ok);
+			}
+
+			.run-state.err {
+				color: var(--err);
+			}
+
+			.spinner {
+				width: 13px;
+				height: 13px;
+				border-radius: 50%;
+				border: 1.8px solid rgba(79, 107, 255, 0.22);
+				border-top-color: var(--accent);
+				animation: spin 0.72s linear infinite;
+				flex: none;
+			}
+
+			@keyframes spin {
+				to {
+					transform: rotate(360deg);
+				}
+			}
+
+			.run-state svg {
+				width: 14px;
+				height: 14px;
+			}
+
+			.run-detail {
+				margin-top: 6px;
+				font-size: 11px;
+				color: var(--ink-3);
+				line-height: 1.5;
+			}
+
+			.run-detail.error {
+				color: var(--err);
+				word-break: break-word;
+			}
+
+			.run-progress {
+				margin-top: 8px;
+				height: 4px;
+				border-radius: 999px;
+				background: #eef1f8;
+				overflow: hidden;
+			}
+
+			.run-progress i {
+				display: block;
+				width: 0;
+				height: 100%;
+				border-radius: 999px;
+				background: linear-gradient(90deg, var(--accent), var(--accent-2));
+				transition: width 0.2s ease;
+			}
+
+			/* ---------- loading ---------- */
+			.loading-screen {
+				gap: 14px;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.loading-box {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 12px;
+			}
+
+			.loading-ring {
+				width: 42px;
+				height: 42px;
+				border-radius: 50%;
+				border: 3px solid rgba(79, 107, 255, 0.16);
+				border-top-color: var(--accent);
+				animation: spin 0.8s linear infinite;
+			}
+
+			.loading-text {
+				font-size: 12.5px;
+				color: var(--ink-2);
+			}
+
+			/* ---------- footer ---------- */
+			footer {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				padding: 12px 22px;
+				background: #fff;
+				border-top: 1px solid var(--line);
+				flex: none;
+			}
+
+			.footer-info {
+				font-size: 11.5px;
+				color: var(--ink-3);
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.footer-spacer {
+				flex: 1 1 auto;
+			}
+
+			/* ---------- empty / error ---------- */
+			.empty {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				gap: 8px;
+				height: 100%;
+				padding: 30px;
+				text-align: center;
+				color: var(--ink-2);
+			}
+
+			.empty-icon {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 54px;
+				height: 54px;
+				border-radius: 16px;
+				background: var(--err-soft);
+				color: var(--err);
+			}
+
+			.empty-icon svg {
+				width: 26px;
+				height: 26px;
+			}
+
+			.empty-title {
+				font-size: 13px;
+				font-weight: 600;
+				color: var(--ink);
+			}
+
+			.empty-sub {
+				font-size: 11.5px;
+				color: var(--ink-3);
+				max-width: 420px;
+				line-height: 1.6;
+			}
+
+			/* ---------- toast ---------- */
+			#toast-host {
+				position: fixed;
+				left: 50%;
+				bottom: 66px;
+				transform: translateX(-50%);
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+				z-index: 99;
+				pointer-events: none;
+			}
+
+			.toast {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				max-width: 520px;
+				padding: 9px 14px;
+				border-radius: 10px;
+				background: rgba(16, 24, 40, 0.92);
+				color: #fff;
+				font-size: 12px;
+				line-height: 1.45;
+				box-shadow: var(--shadow-lg);
+				animation: toast-in 0.22s ease;
+				backdrop-filter: blur(6px);
+			}
+
+			.toast.error {
+				background: rgba(190, 18, 60, 0.94);
+			}
+
+			.toast svg {
+				width: 15px;
+				height: 15px;
+				flex: none;
+			}
+
+			@keyframes toast-in {
+				from {
+					opacity: 0;
+					transform: translateY(8px);
+				}
+				to {
+					opacity: 1;
+					transform: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="app">
+			<div class="hero">
+				<div class="hero-logo">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h3.6a1.5 1.5 0 0 1 1.2.6l.9 1.2H19.5A1.5 1.5 0 0 1 21 10.3v6.2a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5z"></path>
+						<path d="M12 10.8v4.6"></path>
+						<path d="M9.9 13.4 12 15.5l2.1-2.1"></path>
+					</svg>
+				</div>
+				<div class="hero-text">
+					<div class="hero-title" id="hero-title">Load Project/Library Folder</div>
+					<div class="hero-sub" id="hero-sub"></div>
+				</div>
+			</div>
+
+			<div class="steps">
+				<div class="step-chip active" data-step="pick"><span class="idx">1</span><span data-i18n="Pick folder"></span></div>
+				<div class="step-arrow"></div>
+				<div class="step-chip" data-step="review"><span class="idx">2</span><span data-i18n="Choose owner"></span></div>
+				<div class="step-arrow"></div>
+				<div class="step-chip" data-step="run"><span class="idx">3</span><span data-i18n="Import"></span></div>
+			</div>
+
+			<main>
+				<!-- ============ step 1: pick ============ -->
+				<section class="screen active" id="screen-pick">
+					<div class="dropzone" id="dropzone">
+						<div class="dz-icon">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h3.6a1.5 1.5 0 0 1 1.2.6l.9 1.2H19.5A1.5 1.5 0 0 1 21 10.3v6.2a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5z"></path>
+								<path d="M12 11v4.4"></path>
+								<path d="M10 13.3 12 15.3l2-2"></path>
+							</svg>
+						</div>
+						<div class="dz-title" id="dz-title"></div>
+						<div class="dz-or" id="dz-or"></div>
+						<button class="btn" id="btn-browse" type="button">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.4h9A1.5 1.5 0 0 1 21 10v7.5A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5z"></path>
+							</svg>
+							<span data-i18n="Browse Folder..."></span>
+						</button>
+						<div class="dz-hints" id="dz-hints"></div>
+						<div class="dz-picked" id="dz-picked">
+							<div class="dz-picked-icon">
+								<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h3.6a1.5 1.5 0 0 1 1.2.6l.9 1.2H19.5A1.5 1.5 0 0 1 21 10.3v6.2a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5z"></path>
+								</svg>
+							</div>
+							<div style="min-width: 0">
+								<div class="dz-picked-name" id="dz-picked-name"></div>
+								<div class="dz-picked-meta" id="dz-picked-meta"></div>
+							</div>
+							<button class="dz-picked-clear" id="btn-clear" type="button" title="Clear">
+								<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+									<path d="M6 6l12 12M18 6L6 18"></path>
+								</svg>
+							</button>
+						</div>
+					</div>
+				</section>
+
+				<!-- ============ step 2: review ============ -->
+				<section class="screen" id="screen-review">
+					<div class="review">
+						<div class="panel">
+							<div class="panel-head">
+								<span class="panel-title" data-i18n="Detected content"></span>
+								<span class="panel-count" id="unit-count">0</span>
+								<div class="footer-spacer"></div>
+								<button class="btn btn-ghost" id="btn-select-all" type="button" style="height: 26px; padding: 0 9px; font-size: 11.5px">
+									<span data-i18n="Select all"></span>
+								</button>
+							</div>
+							<div class="panel-body" id="unit-list"></div>
+						</div>
+
+						<div class="panel">
+							<div class="panel-head">
+								<span class="panel-title" data-i18n="Import destination"></span>
+							</div>
+							<div class="form">
+								<div class="field">
+									<label for="owner-team" data-i18n="Workspace / Team"></label>
+									<div class="select-wrap">
+										<select id="owner-team"></select>
+									</div>
+								</div>
+								<div class="field">
+									<label for="owner-folder" data-i18n="Destination folder"></label>
+									<div class="select-wrap">
+										<select id="owner-folder"></select>
+									</div>
+								</div>
+								<div class="hint" id="owner-hint"></div>
+								<div class="divider"></div>
+								<label class="switch-row">
+									<input type="checkbox" id="opt-open" checked />
+									<span data-i18n="Open the imported project when finished"></span>
+								</label>
+								<label class="switch-row">
+									<input type="checkbox" id="opt-device" checked />
+									<span data-i18n="Create devices for single symbols in libraries"></span>
+								</label>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- ============ step 2b: analyzing ============ -->
+				<section class="screen loading-screen" id="screen-analyzing">
+					<div class="loading-box">
+						<div class="loading-ring"></div>
+						<div class="loading-text" id="analyzing-text"></div>
+					</div>
+				</section>
+
+				<!-- ============ step 3: run ============ -->
+				<section class="screen" id="screen-run">
+					<div class="run-wrap">
+						<div class="run-summary">
+							<div class="run-summary-icon">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M12 3v10"></path>
+									<path d="M8.4 9.6 12 13.2l3.6-3.6"></path>
+									<path d="M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"></path>
+								</svg>
+							</div>
+							<div class="run-summary-text">
+								<div class="run-summary-title" id="run-title"></div>
+								<div class="run-summary-sub" id="run-sub"></div>
+							</div>
+							<div class="run-bar"><i id="run-bar"></i></div>
+						</div>
+						<div class="run-list" id="run-list"></div>
+					</div>
+				</section>
+			</main>
+
+			<footer>
+				<div class="footer-info" id="footer-info"></div>
+				<div class="footer-spacer"></div>
+				<button class="btn" id="btn-back" type="button"><span data-i18n="Back"></span></button>
+				<button class="btn" id="btn-cancel" type="button"><span data-i18n="Cancel"></span></button>
+				<button class="btn btn-primary" id="btn-next" type="button"><span data-i18n="Import"></span></button>
+			</footer>
+		</div>
+
+		<div id="toast-host"></div>
+
+		<input type="file" id="folder-input" webkitdirectory directory multiple style="display: none" />
+
+		<script>
+			/* ============================================================================
+			 * Load Project/Library Folder - dialog logic
+			 *
+			 * Everything happens in memory: files are read through the File API (so the
+			 * OS/DLP layer decrypts each file individually), packed into an in-memory
+			 * .epro2 / .elibz2 archive and handed to the official import API. No temporary
+			 * archive is ever written to disk.
+			 * ========================================================================== */
+			(function () {
+				'use strict';
+
+				// ---------------------------------------------------------------- i18n
+				var EDA = null;
+				try {
+					if (typeof eda !== 'undefined' && eda) {
+						EDA = eda;
+					}
+					else if (window.parent && window.parent.eda) {
+						EDA = window.parent.eda;
+					}
+				}
+				catch (err) {
+					EDA = null;
+				}
+
+				function t(key) {
+					var args = Array.prototype.slice.call(arguments, 1);
+					var text = key;
+					try {
+						if (EDA && EDA.sys_I18n && typeof EDA.sys_I18n.text === 'function') {
+							var translated = EDA.sys_I18n.text.apply(null, [key, undefined, undefined].concat(args));
+							if (translated) {
+								text = translated;
+							}
+						}
+					}
+					catch (err) {
+						// fall back to the English key
+					}
+					if (args.length) {
+						text = text.replace(/\$\{(\d+)\}/g, function (match, index) {
+							var value = args[Number(index) - 1];
+							return value === undefined || value === null ? match : String(value);
+						});
+					}
+					return text;
+				}
+
+				// ---------------------------------------------------------------- icons
+				var ICONS = {
+					project: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h3.6a1.5 1.5 0 0 1 1.2.6l.9 1.2H19.5A1.5 1.5 0 0 1 21 10.3v6.2a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5z"/></svg>',
+					library: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="4.5" height="16" rx="1.2"/><rect x="10" y="4" width="4.5" height="16" rx="1.2"/><path d="M17.4 5.3l3.4.9-3.1 13.1-3.4-.9z"/></svg>',
+					invalid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8.2v4.6"/><path d="M12 15.9h.01"/></svg>',
+					file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.5H7.5A1.5 1.5 0 0 0 6 5v14a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 18 19V7.5z"/><path d="M14 3.5V7.5h4"/></svg>',
+					chip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M10 3.5v3M14 3.5v3M10 17.5v3M14 17.5v3M3.5 10h3M3.5 14h3M17.5 10h3M17.5 14h3"/></svg>',
+					check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.8l4.2 4.2L19 7.4"/></svg>',
+					close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+					shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2l7 2.6v5.4c0 4.3-2.8 7.4-7 9.6-4.2-2.2-7-5.3-7-9.6V5.8z"/><path d="M9.2 12.1l2 2 3.6-3.8"/></svg>',
+					stack: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6l8 4.2-8 4.2-8-4.2z"/><path d="M4 12.2l8 4.2 8-4.2"/><path d="M4 16.4l8 4.2 8-4.2"/></svg>',
+					arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="M14.2 7l4.8 5-4.8 5"/></svg>',
+				};
+
+				// ---------------------------------------------------------------- state
+				var state = {
+					step: 'pick',
+					files: [], // [{ path, file }]
+					dirs: [], // ['MyRoot/IMAGE/'] - only known when a folder is dropped
+					rootNames: [],
+					units: [], // [{ id, kind, name, path, files, entryCount, bytes, meta, status }]
+					selected: {},
+					teams: [],
+					folders: [],
+					owner: { teamUuid: '', folderUuid: '' },
+					running: false,
+				};
+
+				var nextUnitId = 1;
+
+				// ---------------------------------------------------------------- helpers
+				function $(id) {
+					return document.getElementById(id);
+				}
+
+				function el(tag, className, html) {
+					var node = document.createElement(tag);
+					if (className) {
+						node.className = className;
+					}
+					if (html !== undefined && html !== null) {
+						node.innerHTML = html;
+					}
+					return node;
+				}
+
+				function normalizePath(value) {
+					return String(value || '')
+						.replace(/\\/g, '/')
+						.replace(/\/{2,}/g, '/')
+						.replace(/^\.?\//, '')
+						.replace(/\/$/, '');
+				}
+
+				function baseName(value) {
+					var path = normalizePath(value);
+					var index = path.lastIndexOf('/');
+					return index < 0 ? path : path.slice(index + 1);
+				}
+
+				function dirName(value) {
+					var path = normalizePath(value);
+					var index = path.lastIndexOf('/');
+					return index < 0 ? '' : path.slice(0, index);
+				}
+
+				function formatBytes(bytes) {
+					var value = Number(bytes) || 0;
+					if (value < 1024) {
+						return value + ' B';
+					}
+					if (value < 1024 * 1024) {
+						return (value / 1024).toFixed(1) + ' KB';
+					}
+					if (value < 1024 * 1024 * 1024) {
+						return (value / (1024 * 1024)).toFixed(1) + ' MB';
+					}
+					return (value / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+				}
+
+				function sanitizeName(name) {
+					var text = String(name || 'imported').replace(/[\\/:*?"<>|]/g, '_').trim();
+					return text || 'imported';
+				}
+
+				function randomSuffix(length) {
+					var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+					var out = '';
+					for (var i = 0; i < length; i++) {
+						out += chars.charAt(Math.floor(Math.random() * chars.length));
+					}
+					return out;
+				}
+
+				function toast(message, type) {
+					var host = $('toast-host');
+					var node = el('div', 'toast' + (type === 'error' ? ' error' : ''), (type === 'error' ? ICONS.invalid : ICONS.shield) + '<span>' + escapeHtml(message) + '</span>');
+					host.appendChild(node);
+					setTimeout(function () {
+						node.style.opacity = '0';
+						node.style.transition = 'opacity .25s ease';
+						setTimeout(function () {
+							if (node.parentNode) {
+								node.parentNode.removeChild(node);
+							}
+						}, 260);
+					}, type === 'error' ? 5200 : 3200);
+				}
+
+				function escapeHtml(text) {
+					return String(text === undefined || text === null ? '' : text)
+						.replace(/&/g, '&amp;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+						.replace(/"/g, '&quot;');
+				}
+
+				// ---------------------------------------------------------------- zip writer
+				// Minimal STORE (method 0) ZIP writer: enough for .epro2 / .elibz2 packages and
+				// supported by every unzip implementation.
+				var CRC_TABLE = (function () {
+					var table = new Uint32Array(256);
+					for (var i = 0; i < 256; i++) {
+						var c = i;
+						for (var k = 0; k < 8; k++) {
+							c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+						}
+						table[i] = c >>> 0;
+					}
+					return table;
+				})();
+
+				function crc32(bytes) {
+					var c = 0xFFFFFFFF;
+					for (var i = 0; i < bytes.length; i++) {
+						c = CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+					}
+					return (c ^ 0xFFFFFFFF) >>> 0;
+				}
+
+				function dosDateTime(date) {
+					var year = Math.max(1980, date.getFullYear());
+					var time = (date.getHours() << 11) | (date.getMinutes() << 5) | (date.getSeconds() >> 1);
+					var day = ((year - 1980) << 9) | ((date.getMonth() + 1) << 5) | date.getDate();
+					return { time: time & 0xFFFF, date: day & 0xFFFF };
+				}
+
+				async function buildZipBlob(entries, onProgress) {
+					var encoder = new TextEncoder();
+					var parts = [];
+					var centralParts = [];
+					var offset = 0;
+
+					for (var i = 0; i < entries.length; i++) {
+						var entry = entries[i];
+						var isDir = entry.isDir === true;
+						var data = isDir ? new Uint8Array(0) : entry.data;
+						var nameBytes = encoder.encode(entry.path);
+						var stamp = dosDateTime(entry.lastModified ? new Date(entry.lastModified) : new Date());
+						var checksum = crc32(data);
+
+						var local = new Uint8Array(30 + nameBytes.length);
+						var lv = new DataView(local.buffer);
+						lv.setUint32(0, 0x04034b50, true);
+						lv.setUint16(4, 20, true);
+						lv.setUint16(6, 0x0800, true);
+						lv.setUint16(8, 0, true);
+						lv.setUint16(10, stamp.time, true);
+						lv.setUint16(12, stamp.date, true);
+						lv.setUint32(14, checksum, true);
+						lv.setUint32(18, data.length, true);
+						lv.setUint32(22, data.length, true);
+						lv.setUint16(26, nameBytes.length, true);
+						lv.setUint16(28, 0, true);
+						local.set(nameBytes, 30);
+
+						parts.push(local, data);
+
+						var central = new Uint8Array(46 + nameBytes.length);
+						var cv = new DataView(central.buffer);
+						cv.setUint32(0, 0x02014b50, true);
+						cv.setUint16(4, 20, true);
+						cv.setUint16(6, 20, true);
+						cv.setUint16(8, 0x0800, true);
+						cv.setUint16(10, 0, true);
+						cv.setUint16(12, stamp.time, true);
+						cv.setUint16(14, stamp.date, true);
+						cv.setUint32(16, checksum, true);
+						cv.setUint32(20, data.length, true);
+						cv.setUint32(24, data.length, true);
+						cv.setUint16(28, nameBytes.length, true);
+						cv.setUint16(34, 0, true);
+						cv.setUint16(36, 0, true);
+						// external file attributes: 0x10 marks a MS-DOS directory entry
+						cv.setUint32(38, isDir ? 0x10 : 0, true);
+						cv.setUint32(42, offset, true);
+						central.set(nameBytes, 46);
+						centralParts.push(central);
+
+						offset += local.length + data.length;
+						if (typeof onProgress === 'function') {
+							onProgress(i + 1, entries.length);
+						}
+					}
+
+					var centralSize = 0;
+					for (var j = 0; j < centralParts.length; j++) {
+						centralSize += centralParts[j].length;
+					}
+
+					var end = new Uint8Array(22);
+					var ev = new DataView(end.buffer);
+					ev.setUint32(0, 0x06054b50, true);
+					ev.setUint16(8, centralParts.length, true);
+					ev.setUint16(10, centralParts.length, true);
+					ev.setUint32(12, centralSize, true);
+					ev.setUint32(16, offset, true);
+
+					var blobParts = parts.concat(centralParts, [end]);
+					return new Blob(blobParts, { type: 'application/zip' });
+				}
+
+				// ---------------------------------------------------------------- folder collecting
+				function isNoisePath(path) {
+					var segments = normalizePath(path).split('/');
+					for (var i = 0; i < segments.length; i++) {
+						var name = segments[i];
+						if (!name) {
+							continue;
+						}
+						if (name === '.DS_Store' || name === 'Thumbs.db' || name === 'desktop.ini' || name === '.git' || name === '.svn' || name === '__MACOSX') {
+							return true;
+						}
+						if (name.indexOf('._') === 0) {
+							return true;
+						}
+					}
+					return false;
+				}
+
+				function pushFile(list, path, file) {
+					if (!file) {
+						return;
+					}
+					var normalized = normalizePath(path || file.name);
+					if (!normalized || isNoisePath(normalized)) {
+						return;
+					}
+					list.push({ path: normalized, file: file });
+				}
+
+				function fromWebkitRelativePaths(fileList) {
+					var out = [];
+					for (var i = 0; i < fileList.length; i++) {
+						var file = fileList[i];
+						pushFile(out, file.webkitRelativePath || file.name, file);
+					}
+					return { files: out, dirs: [] };
+				}
+
+				function readEntryEntries(reader) {
+					return new Promise(function (resolve) {
+						var collected = [];
+						var readBatch = function () {
+							reader.readEntries(function (batch) {
+								if (!batch || batch.length === 0) {
+									resolve(collected);
+									return;
+								}
+								collected = collected.concat(Array.prototype.slice.call(batch));
+								readBatch();
+							}, function () {
+								resolve(collected);
+							});
+						};
+						readBatch();
+					});
+				}
+
+				function entryToFile(entry) {
+					return new Promise(function (resolve, reject) {
+						entry.file(function (file) {
+							resolve(file);
+						}, function (err) {
+							reject(err);
+						});
+					});
+				}
+
+				async function walkEntry(entry, basePath, out, dirs) {
+					if (!entry) {
+						return;
+					}
+					if (entry.isFile) {
+						try {
+							var file = await entryToFile(entry);
+							pushFile(out, basePath + entry.name, file);
+						}
+						catch (err) {
+							// unreadable entry (encrypted / permission) - skip silently
+						}
+						return;
+					}
+					if (entry.isDirectory) {
+						var dirPath = basePath + entry.name + '/';
+						if (dirs) {
+							dirs.push(dirPath);
+						}
+						var reader = entry.createReader();
+						var children = await readEntryEntries(reader);
+						for (var i = 0; i < children.length; i++) {
+							await walkEntry(children[i], dirPath, out, dirs);
+						}
+					}
+				}
+
+				async function collectFromDataTransfer(dataTransfer) {
+					var out = [];
+					var dirs = [];
+					var items = dataTransfer.items ? Array.prototype.slice.call(dataTransfer.items) : [];
+					var entries = [];
+					for (var i = 0; i < items.length; i++) {
+						var item = items[i];
+						if (item.kind !== 'file') {
+							continue;
+						}
+						var entry = typeof item.webkitGetAsEntry === 'function' ? item.webkitGetAsEntry() : null;
+						if (entry) {
+							entries.push(entry);
+						}
+					}
+
+					if (entries.length) {
+						for (var e = 0; e < entries.length; e++) {
+							await walkEntry(entries[e], '', out, dirs);
+						}
+						return { files: out, dirs: dirs };
+					}
+
+					var files = dataTransfer.files ? Array.prototype.slice.call(dataTransfer.files) : [];
+					for (var f = 0; f < files.length; f++) {
+						pushFile(out, files[f].webkitRelativePath || files[f].name, files[f]);
+					}
+					return { files: out, dirs: dirs };
+				}
+
+				async function collectFromEdaFolderDialog() {
+					if (!EDA || !EDA.sys_FileSystem || typeof EDA.sys_FileSystem.openReadFolderDialog !== 'function') {
+						return null;
+					}
+					var picked = await EDA.sys_FileSystem.openReadFolderDialog();
+					if (!picked || !picked.length) {
+						return null;
+					}
+					var out = [];
+					for (var i = 0; i < picked.length; i++) {
+						var record = picked[i] || {};
+						var file = record.file || record;
+						var path = record.relativePath || record.webkitRelativePath || (file && file.webkitRelativePath) || (file && file.name);
+						pushFile(out, path, file);
+					}
+					// 该接口只返回文件，目录由文件路径推导（空目录无法得知）
+					return { files: out, dirs: [] };
+				}
+
+				// ---------------------------------------------------------------- detection
+				var PROJECT_MARKERS = ['project2.json'];
+				var LIBRARY_MARKERS = ['device2.json'];
+				var ARCHIVE_PATTERN = /\.(epro2|elibz2|zip)$/i;
+
+				function buildUnitRoots(files) {
+					var fileMap = new Map();
+					for (var i = 0; i < files.length; i++) {
+						fileMap.set(files[i].path, files[i]);
+					}
+
+					var dirs = new Map(); // dir -> { files: [name], subDirs: Set }
+					var ensureDir = function (dir) {
+						if (!dirs.has(dir)) {
+							dirs.set(dir, { names: [], subDirs: [] });
+						}
+						return dirs.get(dir);
+					};
+					ensureDir('');
+
+					files.forEach(function (record) {
+						var dir = dirName(record.path);
+						var name = baseName(record.path);
+						var current = ensureDir(dir);
+						current.names.push(name);
+						var segments = dir.split('/').filter(Boolean);
+						var cursor = '';
+						ensureDir('');
+						for (var s = 0; s < segments.length; s++) {
+							var parent = cursor;
+							cursor = cursor ? cursor + '/' + segments[s] : segments[s];
+							var parentNode = ensureDir(parent);
+							if (parentNode.subDirs.indexOf(cursor) < 0) {
+								parentNode.subDirs.push(cursor);
+							}
+							ensureDir(cursor);
+						}
+					});
+
+					var roots = [];
+
+					var detect = function (dir) {
+						var node = dirs.get(dir) || { names: [], subDirs: [] };
+						var lowerNames = node.names.map(function (name) {
+							return name.toLowerCase();
+						});
+						var hasProjectMarker = PROJECT_MARKERS.some(function (marker) {
+							return lowerNames.indexOf(marker) >= 0;
+						});
+						var hasLibraryMarker = LIBRARY_MARKERS.some(function (marker) {
+							return lowerNames.indexOf(marker) >= 0;
+						});
+						var hasEpru = node.names.some(function (name) {
+							return /\.epru$/i.test(name);
+						});
+						var hasElibu = node.names.some(function (name) {
+							return /\.elibu$/i.test(name);
+						});
+
+						if (hasProjectMarker || hasEpru) {
+							roots.push({ kind: 'project', dir: dir });
+							return;
+						}
+						if (hasLibraryMarker || hasElibu) {
+							roots.push({ kind: 'library', dir: dir });
+							return;
+						}
+
+						// A ready-made archive lying in this directory becomes its own unit.
+						node.names.forEach(function (name) {
+							if (ARCHIVE_PATTERN.test(name)) {
+								var full = dir ? dir + '/' + name : name;
+								if (fileMap.has(full)) {
+									roots.push({ kind: 'archive', dir: dir, filePath: full, archiveName: name });
+								}
+							}
+						});
+
+						var sortedChildren = node.subDirs.slice().sort();
+						for (var c = 0; c < sortedChildren.length; c++) {
+							detect(sortedChildren[c]);
+						}
+					};
+
+					detect('');
+					return roots;
+				}
+
+				function filesUnder(files, dir) {
+					if (!dir) {
+						return files.slice();
+					}
+					var prefix = dir + '/';
+					return files.filter(function (record) {
+						return record.path === dir || record.path.indexOf(prefix) === 0;
+					});
+				}
+
+				async function readJsonSafe(file) {
+					try {
+						var text = await file.text();
+						return JSON.parse(text);
+					}
+					catch (err) {
+						return null;
+					}
+				}
+
+				async function createUnits(files, knownDirs) {
+					var roots = buildUnitRoots(files);
+					var units = [];
+					var allDirs = knownDirs || [];
+
+					for (var i = 0; i < roots.length; i++) {
+						var root = roots[i];
+
+						if (root.kind === 'archive') {
+							var archiveRecord = files.find(function (record) {
+								return record.path === root.filePath;
+							});
+							if (!archiveRecord) {
+								continue;
+							}
+							var lowerName = root.archiveName.toLowerCase();
+							var archiveKind = /\.elibz2$/.test(lowerName) ? 'library' : (/\.epro2$/.test(lowerName) ? 'project' : '');
+							units.push({
+								id: nextUnitId++,
+								kind: archiveKind || 'auto',
+								source: 'archive',
+								name: sanitizeName(baseName(root.archiveName).replace(/\.[^.]+$/, '')),
+								path: root.filePath,
+								files: [archiveRecord],
+								entryCount: 1,
+								bytes: archiveRecord.file.size,
+								meta: [{ icon: 'file', text: formatBytes(archiveRecord.file.size) }],
+								status: 'ready',
+							});
+							continue;
+						}
+
+						var unitFiles = filesUnder(files, root.dir);
+						if (!unitFiles.length) {
+							continue;
+						}
+
+						var name = root.dir ? baseName(root.dir) : ((unitFiles[0] && normalizePath(unitFiles[0].path).split('/')[0]) || 'imported');
+						var bytes = unitFiles.reduce(function (sum, record) {
+							return sum + (record.file.size || 0);
+						}, 0);
+						var meta = [
+							{ icon: 'file', text: t('${1} files', unitFiles.length) },
+							{ icon: 'stack', text: formatBytes(bytes) },
+						];
+
+						if (root.kind === 'project') {
+							var projectJson = unitFiles.find(function (record) {
+								return baseName(record.path).toLowerCase() === 'project2.json' && dirName(record.path) === root.dir;
+							});
+							if (projectJson) {
+								var projectMeta = await readJsonSafe(projectJson.file);
+								if (projectMeta && projectMeta.title) {
+									name = String(projectMeta.title);
+								}
+							}
+						}
+						else {
+							var deviceJson = unitFiles.find(function (record) {
+								return baseName(record.path).toLowerCase() === 'device2.json' && dirName(record.path) === root.dir;
+							});
+							if (deviceJson) {
+								var deviceMeta = await readJsonSafe(deviceJson.file);
+								if (deviceMeta) {
+									var deviceCount = deviceMeta.devices ? Object.keys(deviceMeta.devices).length : 0;
+									var symbolCount = deviceMeta.symbols ? Object.keys(deviceMeta.symbols).length : 0;
+									var footprintCount = deviceMeta.footprints ? Object.keys(deviceMeta.footprints).length : 0;
+									if (deviceCount) {
+										meta.push({ icon: 'chip', text: t('${1} devices', deviceCount) });
+									}
+									if (symbolCount) {
+										meta.push({ icon: 'file', text: t('${1} symbols', symbolCount) });
+									}
+									if (footprintCount) {
+										meta.push({ icon: 'file', text: t('${1} footprints', footprintCount) });
+									}
+								}
+							}
+						}
+
+						units.push({
+							id: nextUnitId++,
+							kind: root.kind,
+							source: 'folder',
+							name: sanitizeName(name),
+							path: root.dir || name,
+							rootDir: root.dir,
+							files: unitFiles,
+							extraDirs: allDirs
+								.filter(function (dir) {
+									return !root.dir || dir.indexOf(root.dir + '/') === 0;
+								})
+								.map(function (dir) {
+									return root.dir ? dir.slice(root.dir.length + 1) : dir;
+								}),
+							entryCount: unitFiles.length,
+							bytes: bytes,
+							meta: meta,
+							status: 'ready',
+						});
+					}
+
+					return units;
+				}
+
+				// ---------------------------------------------------------------- packing
+				function unitEntries(unit) {
+					var entries = [];
+					for (var i = 0; i < unit.files.length; i++) {
+						var record = unit.files[i];
+						var relative = unit.rootDir ? record.path.slice(unit.rootDir.length + 1) : record.path;
+						entries.push({ path: relative, file: record.file });
+					}
+					return entries;
+				}
+
+				/** 从文件相对路径（+ 已知目录）推导 zip 目录条目，保证归档结构与磁盘一致 */
+				function collectDirectoryEntries(records, extraDirs) {
+					var seen = {};
+					var dirs = [];
+
+					var addDir = function (dirPath) {
+						var normalized = dirPath.replace(/\/+$/, '');
+						if (!normalized || seen[normalized]) {
+							return;
+						}
+						seen[normalized] = true;
+						dirs.push({ path: normalized + '/', isDir: true, data: new Uint8Array(0) });
+					};
+
+					for (var i = 0; i < records.length; i++) {
+						var segments = records[i].path.split('/');
+						var current = '';
+						for (var s = 0; s < segments.length - 1; s++) {
+							current = current ? current + '/' + segments[s] : segments[s];
+							addDir(current);
+						}
+					}
+					for (var e = 0; e < (extraDirs || []).length; e++) {
+						addDir(extraDirs[e]);
+					}
+					dirs.sort(function (a, b) {
+						return a.path.localeCompare(b.path);
+					});
+					return dirs;
+				}
+
+				async function packUnit(unit, onProgress) {
+					if (unit.source === 'archive') {
+						var only = unit.files[0];
+						return { blob: only.file, fileName: baseName(only.path) };
+					}
+
+					var records = unitEntries(unit);
+					var prepared = [];
+					for (var i = 0; i < records.length; i++) {
+						var buffer = await records[i].file.arrayBuffer();
+						prepared.push({
+							path: records[i].path,
+							data: new Uint8Array(buffer),
+							lastModified: records[i].file.lastModified,
+						});
+						if (typeof onProgress === 'function') {
+							onProgress(i + 1, records.length);
+						}
+					}
+
+					// Repair a project folder that lost its metadata file.
+					if (unit.kind === 'project') {
+						var hasMeta = prepared.some(function (entry) {
+							return entry.path.toLowerCase() === 'project2.json';
+						});
+						if (!hasMeta) {
+							var synthesized = {
+								title: unit.name,
+								cbb_project: false,
+								editorVersion: '',
+								introduction: '',
+								description: '',
+								tags: '[]',
+							};
+							prepared.unshift({
+								path: 'project2.json',
+								data: new TextEncoder().encode(JSON.stringify(synthesized)),
+								lastModified: Date.now(),
+							});
+						}
+					}
+
+					// Keep the folder structure of the original archive (IMAGE/ sub folders etc.).
+					var withDirs = collectDirectoryEntries(prepared, unit.extraDirs || []).concat(prepared);
+
+					var blob = await buildZipBlob(withDirs);
+					var extension = unit.kind === 'project' ? '.epro2' : '.elibz2';
+					return { blob: blob, fileName: unit.name + extension };
+				}
+
+				// ---------------------------------------------------------------- owner data
+				async function loadTeams() {
+					if (!EDA) {
+						return [];
+					}
+					var teams = [];
+					var seen = {};
+
+					var addAll = function (list) {
+						for (var i = 0; i < (list || []).length; i++) {
+							var item = list[i];
+							if (!item || !item.uuid || seen[item.uuid]) {
+								continue;
+							}
+							seen[item.uuid] = true;
+							teams.push({ uuid: String(item.uuid), name: String(item.name || item.title || item.uuid) });
+						}
+					};
+
+					try {
+						addAll(await EDA.dmt_Team.getAllInvolvedTeamInfo());
+					}
+					catch (err) {
+						// ignore
+					}
+					try {
+						addAll(await EDA.dmt_Team.getAllTeamsInfo());
+					}
+					catch (err) {
+						// ignore
+					}
+					if (!teams.length) {
+						try {
+							var currentTeam = await EDA.dmt_Team.getCurrentTeamInfo();
+							if (currentTeam) {
+								addAll([currentTeam]);
+							}
+						}
+						catch (err) {
+							// ignore
+						}
+					}
+
+					if (!teams.length) {
+						try {
+							var personal = await EDA.lib_LibrariesList.getPersonalLibraryUuid();
+							if (personal) {
+								teams.push({ uuid: String(personal), name: t('Personal library') });
+							}
+						}
+						catch (err) {
+							// ignore
+						}
+					}
+
+					return teams;
+				}
+
+				async function loadFolders(teamUuid) {
+					if (!EDA || !teamUuid) {
+						return [];
+					}
+					var uuids = [];
+					try {
+						uuids = (await EDA.dmt_Folder.getAllFoldersUuid(teamUuid)) || [];
+					}
+					catch (err) {
+						return [];
+					}
+
+					var infos = [];
+					var folderInfos = await Promise.all(uuids.map(function (uuid) {
+						return EDA.dmt_Folder.getFolderInfo(teamUuid, uuid).catch(function () {
+							return null;
+						});
+					}));
+					folderInfos.forEach(function (info) {
+						if (info) {
+							infos.push(info);
+						}
+					});
+
+					var children = new Map();
+					infos.forEach(function (info) {
+						var parent = String(info.parentFolderUuid || '');
+						if (parent === String(teamUuid)) {
+							parent = '';
+						}
+						if (!children.has(parent)) {
+							children.set(parent, []);
+						}
+						children.get(parent).push(info);
+					});
+
+					var flat = [];
+					var walk = function (parent, depth) {
+						var kids = children.get(parent) || [];
+						kids.sort(function (a, b) {
+							return String(a.name || '').localeCompare(String(b.name || ''));
+						});
+						kids.forEach(function (kid) {
+							flat.push({ uuid: String(kid.uuid), name: String(kid.name || kid.uuid), depth: depth });
+							walk(String(kid.uuid), depth + 1);
+						});
+					};
+					walk('', 0);
+					return flat;
+				}
+
+				// ---------------------------------------------------------------- rendering
+				function setStep(step) {
+					state.step = step;
+					var screens = { pick: 'screen-pick', analyze: 'screen-analyzing', review: 'screen-review', run: 'screen-run' };
+					Object.keys(screens).forEach(function (key) {
+						var node = $(screens[key]);
+						if (node) {
+							node.classList.toggle('active', key === step);
+						}
+					});
+
+					var order = ['pick', 'review', 'run'];
+					var currentIndex = order.indexOf(step === 'analyze' ? 'pick' : step);
+					var chips = document.querySelectorAll('.step-chip');
+					for (var i = 0; i < chips.length; i++) {
+						var chipStep = chips[i].getAttribute('data-step');
+						var chipIndex = order.indexOf(chipStep);
+						chips[i].classList.toggle('active', chipIndex === currentIndex);
+						chips[i].classList.toggle('done', chipIndex < currentIndex);
+					}
+					updateFooter();
+				}
+
+				function updateFooter() {
+					var btnBack = $('btn-back');
+					var btnCancel = $('btn-cancel');
+					var btnNext = $('btn-next');
+					var info = $('footer-info');
+
+					btnBack.style.display = 'none';
+					btnCancel.style.display = '';
+					btnNext.style.display = '';
+					btnCancel.disabled = false;
+					btnNext.disabled = false;
+
+					if (state.step === 'pick') {
+						var hasFiles = state.files.length > 0;
+						btnNext.innerHTML = ICONS.arrow + '<span>' + escapeHtml(t('Import')) + '</span>';
+						btnNext.disabled = !hasFiles || state.running;
+						info.textContent = hasFiles
+							? t('${1} files ready', state.files.length)
+							: t('Pick a folder to start');
+					}
+					else if (state.step === 'analyze') {
+						btnNext.disabled = true;
+						btnCancel.disabled = true;
+						info.textContent = '';
+					}
+					else if (state.step === 'review') {
+						var selectedCount = Object.keys(state.selected).filter(function (key) {
+							return state.selected[key];
+						}).length;
+						btnBack.style.display = '';
+						btnNext.innerHTML = ICONS.arrow + '<span>' + escapeHtml(t('Start import')) + '</span>';
+						btnNext.disabled = selectedCount === 0 || !state.owner.teamUuid;
+						info.textContent = t('${1} selected', selectedCount);
+					}
+					else {
+						btnCancel.style.display = 'none';
+						btnNext.innerHTML = '<span>' + escapeHtml(t('Close')) + '</span>';
+						btnNext.disabled = state.running;
+					}
+				}
+
+				function renderPickedFolder() {
+					var picked = $('dz-picked');
+					if (!state.files.length) {
+						picked.classList.remove('show');
+						updateFooter();
+						return;
+					}
+					var names = state.rootNames.length ? state.rootNames : [t('Files')];
+					var totalBytes = state.files.reduce(function (sum, record) {
+						return sum + (record.file.size || 0);
+					}, 0);
+					$('dz-picked-name').textContent = names.join(', ');
+					$('dz-picked-meta').textContent = t('${1} files, ${2}', state.files.length, formatBytes(totalBytes));
+					picked.classList.add('show');
+					updateFooter();
+				}
+
+				function renderUnits() {
+					var list = $('unit-list');
+					list.innerHTML = '';
+					$('unit-count').textContent = String(state.units.length);
+
+					if (!state.units.length) {
+						list.appendChild(el('div', 'empty', ICONS.invalid + '<div class="empty-title">' + escapeHtml(t('No project or library folder detected')) + '</div><div class="empty-sub">' + escapeHtml(t('A project folder contains project2.json (*.epru), a library folder contains device2.json (*.elibu).')) + '</div>'));
+						return;
+					}
+
+					state.units.forEach(function (unit) {
+						var node = el('div', 'unit' + (state.selected[unit.id] ? ' checked' : ''));
+						node.setAttribute('data-unit', String(unit.id));
+
+						var badgeClass = unit.kind === 'project' ? 'project' : (unit.kind === 'library' ? 'library' : 'invalid');
+						var badgeText = unit.kind === 'project' ? t('Project') : (unit.kind === 'library' ? t('Library') : t('Archive'));
+						var iconClass = unit.kind === 'project' ? 'project' : (unit.kind === 'library' ? 'library' : 'invalid');
+						var icon = unit.kind === 'project' ? ICONS.project : (unit.kind === 'library' ? ICONS.library : ICONS.file);
+
+						var metaHtml = unit.meta.map(function (item) {
+							return '<span>' + (ICONS[item.icon] || '') + escapeHtml(item.text) + '</span>';
+						}).join('');
+
+						node.innerHTML =
+							'<div class="unit-check"></div>'
+							+ '<div class="unit-icon ' + iconClass + '">' + icon + '</div>'
+							+ '<div class="unit-main">'
+							+ '<div class="unit-top"><span class="unit-name">' + escapeHtml(unit.name) + '</span><span class="badge ' + badgeClass + '">' + escapeHtml(badgeText) + '</span></div>'
+							+ '<div class="unit-path" title="' + escapeHtml(unit.path) + '">' + escapeHtml(unit.path) + '</div>'
+							+ '<div class="unit-meta">' + metaHtml + '</div>'
+							+ '</div>';
+
+						node.addEventListener('click', function () {
+							state.selected[unit.id] = !state.selected[unit.id];
+							node.classList.toggle('checked', !!state.selected[unit.id]);
+							updateFooter();
+						});
+
+						list.appendChild(node);
+					});
+				}
+
+				function renderTeams() {
+					var select = $('owner-team');
+					select.innerHTML = '';
+					if (!state.teams.length) {
+						var option = document.createElement('option');
+						option.value = '';
+						option.textContent = t('No workspace found');
+						select.appendChild(option);
+						select.disabled = true;
+						return;
+					}
+					select.disabled = false;
+					state.teams.forEach(function (team) {
+						var node = document.createElement('option');
+						node.value = team.uuid;
+						node.textContent = team.name;
+						select.appendChild(node);
+					});
+					select.value = state.owner.teamUuid || state.teams[0].uuid;
+					state.owner.teamUuid = select.value;
+				}
+
+				function renderFolders() {
+					var select = $('owner-folder');
+					select.innerHTML = '';
+					var root = document.createElement('option');
+					root.value = '';
+					root.textContent = t('Root directory of the team');
+					select.appendChild(root);
+
+					state.folders.forEach(function (folder) {
+						var node = document.createElement('option');
+						node.value = folder.uuid;
+						node.textContent = new Array(folder.depth + 1).join('\u00A0\u00A0\u00A0') + (folder.depth > 0 ? '\u2514 ' : '') + folder.name;
+						select.appendChild(node);
+					});
+					select.value = state.owner.folderUuid || '';
+					state.owner.folderUuid = select.value;
+
+					$('owner-hint').textContent = state.folders.length
+						? t('${1} folders in this workspace', state.folders.length)
+						: t('Projects are imported into the root directory of the selected workspace.');
+				}
+
+				function renderRunList() {
+					var list = $('run-list');
+					list.innerHTML = '';
+					state.units.forEach(function (unit) {
+						if (!state.selected[unit.id]) {
+							return;
+						}
+						var node = el('div', 'run-item');
+						node.setAttribute('data-unit', String(unit.id));
+						var badgeClass = unit.kind === 'project' ? 'project' : 'library';
+						var badgeText = unit.kind === 'project' ? t('Project') : t('Library');
+						node.innerHTML =
+							'<div class="run-head">'
+							+ '<span class="unit-name">' + escapeHtml(unit.name) + '</span>'
+							+ '<span class="badge ' + badgeClass + '">' + escapeHtml(badgeText) + '</span>'
+							+ '<span class="run-state" data-role="state"><span class="spinner"></span><span>' + escapeHtml(t('Waiting')) + '</span></span>'
+							+ '</div>'
+							+ '<div class="run-progress"><i data-role="bar"></i></div>'
+							+ '<div class="run-detail" data-role="detail"></div>';
+						list.appendChild(node);
+					});
+				}
+
+				function updateRunItem(unit, status, detail, progress) {
+					var node = document.querySelector('.run-item[data-unit="' + unit.id + '"]');
+					if (!node) {
+						return;
+					}
+					var stateNode = node.querySelector('[data-role="state"]');
+					var barNode = node.querySelector('[data-role="bar"]');
+					var detailNode = node.querySelector('[data-role="detail"]');
+
+					node.classList.toggle('running', status === 'running');
+					node.classList.toggle('ok', status === 'ok');
+					node.classList.toggle('err', status === 'err');
+
+					var label = t('Waiting');
+					var inner = '<span class="spinner"></span><span>' + escapeHtml(label) + '</span>';
+					if (status === 'running') {
+						inner = '<span class="spinner"></span><span>' + escapeHtml(detail || t('Working...')) + '</span>';
+					}
+					else if (status === 'ok') {
+						inner = ICONS.check + '<span>' + escapeHtml(t('Imported')) + '</span>';
+					}
+					else if (status === 'err') {
+						inner = ICONS.close + '<span>' + escapeHtml(t('Failed')) + '</span>';
+					}
+					stateNode.innerHTML = inner;
+
+					if (typeof progress === 'number') {
+						barNode.style.width = Math.max(0, Math.min(100, progress)) + '%';
+					}
+					if (status === 'ok') {
+						barNode.style.width = '100%';
+					}
+					if (detailNode) {
+						detailNode.textContent = (status === 'err' && detail) ? detail : '';
+						detailNode.classList.toggle('error', status === 'err');
+					}
+				}
+
+				function updateRunSummary(title, sub, percent) {
+					$('run-title').textContent = title;
+					$('run-sub').textContent = sub || '';
+					$('run-bar').style.width = Math.max(0, Math.min(100, percent || 0)) + '%';
+				}
+
+				// ---------------------------------------------------------------- flow
+				async function applyPickedFiles(picked) {
+					var files = (picked && picked.files) || [];
+					if (!files.length) {
+						toast(t('The selected folder is empty.'), 'error');
+						return;
+					}
+					state.files = files;
+					state.dirs = (picked && picked.dirs) || [];
+					var roots = {};
+					files.forEach(function (record) {
+						var head = normalizePath(record.path).split('/')[0];
+						if (head && head.indexOf('.') !== 0) {
+							roots[head] = true;
+						}
+					});
+					state.rootNames = Object.keys(roots).slice(0, 3);
+					renderPickedFolder();
+					if (state.files.length > 40000) {
+						toast(t('This folder contains a huge number of files (${1}). Analysis may take a while.', state.files.length));
+					}
+				}
+
+				async function startAnalysis() {
+					if (!state.files.length || state.running) {
+						return;
+					}
+					setStep('analyze');
+					$('analyzing-text').textContent = t('Analyzing folder structure...');
+
+					try {
+						var units = await createUnits(state.files, state.dirs || []);
+						state.units = units;
+						state.selected = {};
+						units.forEach(function (unit) {
+							state.selected[unit.id] = true;
+						});
+
+						if (!units.length) {
+							toast(t('No project or library folder detected.'), 'error');
+							setStep('pick');
+							return;
+						}
+
+						$('analyzing-text').textContent = t('Reading workspace information...');
+						state.teams = await loadTeams();
+						if (state.teams.length) {
+							state.owner.teamUuid = state.owner.teamUuid && state.teams.some(function (team) {
+								return team.uuid === state.owner.teamUuid;
+							})
+								? state.owner.teamUuid
+								: state.teams[0].uuid;
+							state.folders = await loadFolders(state.owner.teamUuid);
+						}
+
+						renderTeams();
+						renderFolders();
+						renderUnits();
+						setStep('review');
+					}
+					catch (err) {
+						console.error('[ImportFolder] analysis failed:', err);
+						toast(t('Failed to analyze the folder: ${1}', String(err)), 'error');
+						setStep('pick');
+					}
+				}
+
+				async function importUnit(unit, options) {
+					var owner = state.owner;
+					var packed = await packUnit(unit, function (done, total) {
+						updateRunItem(unit, 'running', t('Packing ${1} / ${2}', done, total), Math.round((done / Math.max(total, 1)) * 60));
+					});
+
+					updateRunItem(unit, 'running', t('Importing...'), 70);
+
+					var safeName = sanitizeName(unit.name);
+					var kind = packed.fileName.toLowerCase().indexOf('.elibz2') >= 0 ? 'library' : (packed.fileName.toLowerCase().indexOf('.epro2') >= 0 ? 'project' : (unit.kind === 'library' ? 'library' : 'project'));
+
+					var saveTo = {
+						operation: 'New Project',
+						newProjectOwnerTeamUuid: owner.teamUuid,
+						newProjectFriendlyName: unit.name,
+						newProjectDescription: '',
+						newProjectCollaborationMode: 1,
+					};
+					if (owner.folderUuid) {
+						saveTo.newProjectOwnerFolderUuid = owner.folderUuid;
+					}
+
+					var librariesImportSetting = {
+						ownerTeamUuid: owner.teamUuid,
+						createDeviceForSingleSymbol: options.createDeviceForSingleSymbol !== false,
+					};
+
+					var attempts = [];
+					if (kind === 'library') {
+						attempts.push({ name: safeName + '.elibz2', importOption: 'ExtractLibraries' });
+						attempts.push({ name: safeName + '.zip', importOption: 'ExtractLibraries' });
+					}
+					else if (unit.kind === 'auto') {
+						// Unknown archive flavour: try both pipelines before giving up.
+						attempts.push({ name: safeName + '.epro2', importOption: 'ImportDocument' });
+						attempts.push({ name: safeName + '.elibz2', importOption: 'ExtractLibraries' });
+						attempts.push({ name: safeName + '.zip', importOption: 'ExtractLibraries' });
+					}
+					else {
+						attempts.push({ name: safeName + '.epro2', importOption: 'ImportDocument' });
+						attempts.push({ name: safeName + '_' + randomSuffix(4) + '.epro2', importOption: 'ImportDocument' });
+					}
+
+					var lastError = null;
+					for (var i = 0; i < attempts.length; i++) {
+						var attempt = attempts[i];
+						try {
+							var importFile = new File([packed.blob], attempt.name, { type: 'application/zip' });
+							var result = await EDA.sys_FileManager.importProjectByProjectFile(
+								importFile,
+								'EasyEDA Pro',
+								{ importOption: attempt.importOption },
+								saveTo,
+								librariesImportSetting,
+							);
+							if (result) {
+								updateRunItem(unit, 'ok', '', 100);
+								return { ok: true, result: result, kind: kind };
+							}
+							lastError = new Error(t('EasyEDA rejected the package "${1}"', attempt.name));
+						}
+						catch (err) {
+							lastError = err;
+						}
+					}
+
+					throw lastError || new Error(t('Import failed'));
+				}
+
+				async function startImport() {
+					if (state.running) {
+						return;
+					}
+					var queue = state.units.filter(function (unit) {
+						return state.selected[unit.id];
+					});
+					if (!queue.length || !state.owner.teamUuid) {
+						return;
+					}
+
+					state.running = true;
+					setStep('run');
+					renderRunList();
+					updateRunSummary(t('Importing...'), t('${1} / ${2}', 0, queue.length), 0);
+					updateFooter();
+
+					var options = {
+						createDeviceForSingleSymbol: $('opt-device').checked,
+					};
+					var openAfter = $('opt-open').checked;
+
+					var succeeded = 0;
+					var failed = 0;
+					var lastProjectUuid = '';
+
+					for (var i = 0; i < queue.length; i++) {
+						var unit = queue[i];
+						updateRunSummary(t('Importing "${1}"', unit.name), t('${1} / ${2}', i + 1, queue.length), Math.round((i / queue.length) * 100));
+						try {
+							var outcome = await importUnit(unit, options);
+							succeeded++;
+							if (outcome && outcome.result && outcome.result.uuid && outcome.kind === 'project') {
+								lastProjectUuid = String(outcome.result.uuid);
+							}
+						}
+						catch (err) {
+							console.error('[ImportFolder] import failed:', unit.name, err);
+							failed++;
+							updateRunItem(unit, 'err', String(err && err.message ? err.message : err), 100);
+						}
+					}
+
+					state.running = false;
+					updateRunSummary(
+						failed ? t('Import finished with errors') : t('Import completed'),
+						t('${1} succeeded, ${2} failed', succeeded, failed),
+						100,
+					);
+
+					if (openAfter && lastProjectUuid && EDA && EDA.dmt_Project) {
+						try {
+							await EDA.dmt_Project.openProject(lastProjectUuid);
+						}
+						catch (err) {
+							console.warn('[ImportFolder] openProject failed:', err);
+						}
+					}
+
+					updateFooter();
+				}
+
+				function closeDialog() {
+					try {
+						if (EDA && EDA.sys_Storage) {
+							EDA.sys_Storage.setExtensionUserConfig('importFolderDialogCmd', JSON.stringify({ cmd: 'close', seq: Date.now() }));
+						}
+					}
+					catch (err) {
+						// ignore
+					}
+					try {
+						if (EDA && EDA.sys_IFrame) {
+							EDA.sys_IFrame.closeIFrame();
+						}
+					}
+					catch (err) {
+						// ignore
+					}
+				}
+
+				// ---------------------------------------------------------------- wiring
+				function localize() {
+					document.title = t('Load Project/Library Folder');
+					$('hero-title').textContent = t('Load Project/Library Folder');
+					$('hero-sub').textContent = t('Projects (.epro2) and libraries (.elibz2) are packed in memory, so encrypted files never block the import.');
+					$('dz-title').textContent = t('Drag & drop a folder here');
+					$('dz-or').textContent = t('or');
+					$('dz-hints').innerHTML =
+						'<span class="dz-hint">' + ICONS.shield + escapeHtml(t('Nested project and library folders are detected automatically')) + '</span>'
+						+ '<span class="dz-hint">' + ICONS.shield + escapeHtml(t('Everything is packed in memory, nothing is written to disk')) + '</span>';
+					var targets = document.querySelectorAll('[data-i18n]');
+					for (var i = 0; i < targets.length; i++) {
+						targets[i].textContent = t(targets[i].getAttribute('data-i18n'));
+					}
+				}
+
+				function bindEvents() {
+					var dropzone = $('dropzone');
+					var folderInput = $('folder-input');
+
+					['dragenter', 'dragover'].forEach(function (type) {
+						dropzone.addEventListener(type, function (event) {
+							event.preventDefault();
+							event.stopPropagation();
+							dropzone.classList.add('dragging');
+						});
+					});
+					['dragleave', 'dragend'].forEach(function (type) {
+						dropzone.addEventListener(type, function (event) {
+							event.preventDefault();
+							event.stopPropagation();
+							if (event.target === dropzone) {
+								dropzone.classList.remove('dragging');
+							}
+						});
+					});
+
+					dropzone.addEventListener('drop', async function (event) {
+						event.preventDefault();
+						event.stopPropagation();
+						dropzone.classList.remove('dragging');
+						try {
+							var files = await collectFromDataTransfer(event.dataTransfer);
+							await applyPickedFiles(files);
+						}
+						catch (err) {
+							console.error('[ImportFolder] drop failed:', err);
+							toast(t('Failed to read the folder: ${1}', String(err)), 'error');
+						}
+					});
+
+					window.addEventListener('dragover', function (event) {
+						event.preventDefault();
+					});
+					window.addEventListener('drop', function (event) {
+						event.preventDefault();
+					});
+
+					dropzone.addEventListener('click', function (event) {
+						if (event.target.closest('#btn-clear')) {
+							return;
+						}
+						browseFolder();
+					});
+
+					$('btn-browse').addEventListener('click', function (event) {
+						event.stopPropagation();
+						browseFolder();
+					});
+
+					$('btn-clear').addEventListener('click', function (event) {
+						event.stopPropagation();
+						state.files = [];
+						state.dirs = [];
+						state.rootNames = [];
+						state.units = [];
+						state.selected = {};
+						renderPickedFolder();
+					});
+
+					folderInput.addEventListener('change', async function () {
+						try {
+							var files = fromWebkitRelativePaths(folderInput.files);
+							folderInput.value = '';
+							await applyPickedFiles(files);
+						}
+						catch (err) {
+							console.error('[ImportFolder] input failed:', err);
+							toast(t('Failed to read the folder: ${1}', String(err)), 'error');
+						}
+					});
+
+					$('owner-team').addEventListener('change', async function () {
+						state.owner.teamUuid = $('owner-team').value;
+						state.owner.folderUuid = '';
+						$('owner-hint').textContent = t('Loading folders...');
+						state.folders = await loadFolders(state.owner.teamUuid);
+						renderFolders();
+						updateFooter();
+					});
+
+					$('owner-folder').addEventListener('change', function () {
+						state.owner.folderUuid = $('owner-folder').value;
+					});
+
+					$('btn-select-all').addEventListener('click', function () {
+						var allSelected = state.units.every(function (unit) {
+							return state.selected[unit.id];
+						});
+						state.units.forEach(function (unit) {
+							state.selected[unit.id] = !allSelected;
+						});
+						renderUnits();
+						updateFooter();
+					});
+
+					$('btn-next').addEventListener('click', function () {
+						if (state.step === 'pick') {
+							startAnalysis();
+						}
+						else if (state.step === 'review') {
+							startImport();
+						}
+						else if (state.step === 'run') {
+							closeDialog();
+						}
+					});
+
+					$('btn-back').addEventListener('click', function () {
+						if (state.step === 'review') {
+							setStep('pick');
+						}
+					});
+
+					$('btn-cancel').addEventListener('click', function () {
+						closeDialog();
+					});
+				}
+
+				async function browseFolder() {
+					if (state.running) {
+						return;
+					}
+					try {
+						var fromEda = await collectFromEdaFolderDialog();
+						if (fromEda && fromEda.files && fromEda.files.length) {
+							await applyPickedFiles(fromEda);
+							return;
+						}
+						if (fromEda === null) {
+							$('folder-input').click();
+						}
+					}
+					catch (err) {
+						console.warn('[ImportFolder] folder dialog unavailable, falling back to input:', err);
+						$('folder-input').click();
+					}
+				}
+
+				function boot() {
+					localize();
+					bindEvents();
+					setStep('pick');
+					renderPickedFolder();
+					if (!EDA) {
+						toast(t('The EasyEDA API is not available. Please use this extension inside EasyEDA Pro.'), 'error');
+					}
+				}
+
+				if (document.readyState === 'loading') {
+					document.addEventListener('DOMContentLoaded', boot);
+				}
+				else {
+					boot();
+				}
+			})();
+		</script>
+	</body>
+</html>

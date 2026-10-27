@@ -1,0 +1,202 @@
+{
+	"name": "import-folder-to-easyeda",
+	"uuid": "d4f7a1c2b9e84a6d8f320c5b7e1a9d63",
+	"displayName": "Load Project/Library Folder",
+	"description": "Import EasyEDA Pro projects (.epro2) and libraries (.elibz2) straight from unzipped folders. The extension walks the folder tree, recognises nested project/library folders, re-packs them in memory and imports them through the official import pipeline - nothing is written to disk, so encrypted/DLP protected clients that block archive import can still load their designs.",
+	"version": "1.0.0",
+	"publisher": "",
+	"engines": {
+		"eda": "^3.2.0"
+	},
+	"license": "Apache-2.0",
+	"repository": {
+		"type": "extension-store",
+		"url": ""
+	},
+	"categories": [
+		"Project",
+		"Library"
+	],
+	"keywords": [
+		"Import",
+		"Folder",
+		"Archive",
+		"Project",
+		"Library",
+		"epro2",
+		"elibz2",
+		"Tool"
+	],
+	"images": {
+		"logo": "./images/logo.png"
+	},
+	"homepage": "",
+	"bugs": "",
+	"activationEvents": {},
+	"entry": "./dist/index",
+	"dependentExtensions": {},
+	"headerMenus": {
+		"home": [
+			{
+				"id": "importFolderHome",
+				"title": "Load Project/Library Folder",
+				"menuItems": [
+					{
+						"id": "importFolderHomeOpen",
+						"title": "Import from Folder...",
+						"registerFn": "openImportFolderDialog"
+					},
+					{
+						"id": "importFolderHomeAbout",
+						"title": "About...",
+						"registerFn": "about"
+					}
+				]
+			}
+		],
+		"blank": [
+			{
+				"id": "importFolderBlank",
+				"title": "Load Project/Library Folder",
+				"menuItems": [
+					{
+						"id": "importFolderBlankOpen",
+						"title": "Import from Folder...",
+						"registerFn": "openImportFolderDialog"
+					},
+					{
+						"id": "importFolderBlankAbout",
+						"title": "About...",
+						"registerFn": "about"
+					}
+				]
+			}
+		],
+		"sch": [
+			{
+				"id": "importFolderSch",
+				"title": "Load Project/Library Folder",
+				"menuItems": [
+					{
+						"id": "importFolderSchOpen",
+						"title": "Import from Folder...",
+						"registerFn": "openImportFolderDialog"
+					},
+					{
+						"id": "importFolderSchAbout",
+						"title": "About...",
+						"registerFn": "about"
+					}
+				]
+			}
+		],
+		"symbol": [
+			{
+				"id": "importFolderSymbol",
+				"title": "Load Project/Library Folder",
+				"menuItems": [
+					{
+						"id": "importFolderSymbolOpen",
+						"title": "Import from Folder...",
+						"registerFn": "openImportFolderDialog"
+					},
+					{
+						"id": "importFolderSymbolAbout",
+						"title": "About...",
+						"registerFn": "about"
+					}
+				]
+			}
+		],
+		"pcb": [
+			{
+				"id": "importFolderPcb",
+				"title": "Load Project/Library Folder",
+				"menuItems": [
+					{
+						"id": "importFolderPcbOpen",
+						"title": "Import from Folder...",
+						"registerFn": "openImportFolderDialog"
+					},
+					{
+						"id": "importFolderPcbAbout",
+						"title": "About...",
+						"registerFn": "about"
+					}
+				]
+			}
+		],
+		"footprint": [
+			{
+				"id": "importFolderFootprint",
+				"title": "Load Project/Library Folder",
+				"menuItems": [
+					{
+						"id": "importFolderFootprintOpen",
+						"title": "Import from Folder...",
+						"registerFn": "openImportFolderDialog"
+					},
+					{
+						"id": "importFolderFootprintAbout",
+						"title": "About...",
+						"registerFn": "about"
+					}
+				]
+			}
+		],
+		"pcbView": [
+			{
+				"id": "importFolderPcbView",
+				"title": "Load Project/Library Folder",
+				"menuItems": [
+					{
+						"id": "importFolderPcbViewOpen",
+						"title": "Import from Folder...",
+						"registerFn": "openImportFolderDialog"
+					},
+					{
+						"id": "importFolderPcbViewAbout",
+						"title": "About...",
+						"registerFn": "about"
+					}
+				]
+			}
+		],
+		"panel": [
+			{
+				"id": "importFolderPanel",
+				"title": "Load Project/Library Folder",
+				"menuItems": [
+					{
+						"id": "importFolderPanelOpen",
+						"title": "Import from Folder...",
+						"registerFn": "openImportFolderDialog"
+					},
+					{
+						"id": "importFolderPanelAbout",
+						"title": "About...",
+						"registerFn": "about"
+					}
+				]
+			}
+		],
+		"panelView": [
+			{
+				"id": "importFolderPanelView",
+				"title": "Load Project/Library Folder",
+				"menuItems": [
+					{
+						"id": "importFolderPanelViewOpen",
+						"title": "Import from Folder...",
+						"registerFn": "openImportFolderDialog"
+					},
+					{
+						"id": "importFolderPanelViewAbout",
+						"title": "About...",
+						"registerFn": "about"
+					}
+				]
+			}
+		]
+	}
+}

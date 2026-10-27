@@ -1,0 +1,6 @@
+{
+	"Load Project/Library Folder": "Load Project/Library Folder",
+	"Import from Folder...": "Import from Folder...",
+	"About...": "About...",
+	"Import EasyEDA Pro projects (.epro2) and libraries (.elibz2) straight from unzipped folders. The extension walks the folder tree, recognises nested project/library folders, re-packs them in memory and imports them through the official import pipeline - nothing is written to disk, so encrypted/DLP protected clients that block archive import can still load their designs.": "Import EasyEDA Pro projects (.epro2) and libraries (.elibz2) straight from unzipped folders. The extension walks the folder tree, recognises nested project/library folders, re-packs them in memory and imports them through the official import pipeline - nothing is written to disk, so encrypted/DLP protected clients that block archive import can still load their designs."
+}
