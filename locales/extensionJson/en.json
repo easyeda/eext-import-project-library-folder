@@ -1,6 +1,6 @@
 {
-	"Load Project/Library Folder": "Load Project/Library Folder",
-	"Import from Folder...": "Import from Folder...",
-	"About...": "About...",
-	"Import EasyEDA Pro projects (.epro2) and libraries (.elibz2) straight from unzipped folders. The extension walks the folder tree, recognises nested project/library folders, re-packs them in memory and imports them through the official import pipeline - nothing is written to disk, so encrypted/DLP protected clients that block archive import can still load their designs.": "Import EasyEDA Pro projects (.epro2) and libraries (.elibz2) straight from unzipped folders. The extension walks the folder tree, recognises nested project/library folders, re-packs them in memory and imports them through the official import pipeline - nothing is written to disk, so encrypted/DLP protected clients that block archive import can still load their designs."
+	"加载工程/库文件夹": "Load Project/Library Folder",
+	"从文件夹导入工程 / 库...": "Import from Folder...",
+	"关于...": "About...",
+	"直接从未解压的文件夹导入嘉立创EDA专业版工程（.epro2）与库（.elibz2）。扩展会遍历文件夹树、自动识别嵌套的工程 / 库文件夹，在内存中重新打包后走官方导入流程——全程不写入本地磁盘，因此本地文件被加密系统（DLP）保护、压缩包无法直接导入的客户端也能正常加载自己的设计。": "Import EasyEDA Pro projects (.epro2) and libraries (.elibz2) straight from unzipped folders. The extension walks the folder tree, recognises nested project/library folders, re-packs them in memory and imports them through the official import pipeline - nothing is written to disk, so clients whose local file-encryption (DLP) agent blocks archive import can still load their designs."
 }

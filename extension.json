@@ -1,10 +1,10 @@
 {
 	"name": "import-folder-to-easyeda",
 	"uuid": "d4f7a1c2b9e84a6d8f320c5b7e1a9d63",
-	"displayName": "Load Project/Library Folder",
-	"description": "Import EasyEDA Pro projects (.epro2) and libraries (.elibz2) straight from unzipped folders. The extension walks the folder tree, recognises nested project/library folders, re-packs them in memory and imports them through the official import pipeline - nothing is written to disk, so encrypted/DLP protected clients that block archive import can still load their designs.",
+	"displayName": "加载工程/库文件夹",
+	"description": "直接从未解压的文件夹导入嘉立创EDA专业版工程（.epro2）与库（.elibz2）。扩展会遍历文件夹树、自动识别嵌套的工程 / 库文件夹，在内存中重新打包后走官方导入流程——全程不写入本地磁盘，因此本地文件被加密系统（DLP）保护、压缩包无法直接导入的客户端也能正常加载自己的设计。",
 	"version": "1.0.0",
-	"publisher": "",
+	"publisher": "EasyEDA",
 	"engines": {
 		"eda": "^3.2.0"
 	},
@@ -39,16 +39,16 @@
 		"home": [
 			{
 				"id": "importFolderHome",
-				"title": "Load Project/Library Folder",
+				"title": "加载工程/库文件夹",
 				"menuItems": [
 					{
 						"id": "importFolderHomeOpen",
-						"title": "Import from Folder...",
+						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
 					},
 					{
 						"id": "importFolderHomeAbout",
-						"title": "About...",
+						"title": "关于...",
 						"registerFn": "about"
 					}
 				]
@@ -57,16 +57,16 @@
 		"blank": [
 			{
 				"id": "importFolderBlank",
-				"title": "Load Project/Library Folder",
+				"title": "加载工程/库文件夹",
 				"menuItems": [
 					{
 						"id": "importFolderBlankOpen",
-						"title": "Import from Folder...",
+						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
 					},
 					{
 						"id": "importFolderBlankAbout",
-						"title": "About...",
+						"title": "关于...",
 						"registerFn": "about"
 					}
 				]
@@ -75,16 +75,16 @@
 		"sch": [
 			{
 				"id": "importFolderSch",
-				"title": "Load Project/Library Folder",
+				"title": "加载工程/库文件夹",
 				"menuItems": [
 					{
 						"id": "importFolderSchOpen",
-						"title": "Import from Folder...",
+						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
 					},
 					{
 						"id": "importFolderSchAbout",
-						"title": "About...",
+						"title": "关于...",
 						"registerFn": "about"
 					}
 				]
@@ -93,16 +93,16 @@
 		"symbol": [
 			{
 				"id": "importFolderSymbol",
-				"title": "Load Project/Library Folder",
+				"title": "加载工程/库文件夹",
 				"menuItems": [
 					{
 						"id": "importFolderSymbolOpen",
-						"title": "Import from Folder...",
+						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
 					},
 					{
 						"id": "importFolderSymbolAbout",
-						"title": "About...",
+						"title": "关于...",
 						"registerFn": "about"
 					}
 				]
@@ -111,16 +111,16 @@
 		"pcb": [
 			{
 				"id": "importFolderPcb",
-				"title": "Load Project/Library Folder",
+				"title": "加载工程/库文件夹",
 				"menuItems": [
 					{
 						"id": "importFolderPcbOpen",
-						"title": "Import from Folder...",
+						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
 					},
 					{
 						"id": "importFolderPcbAbout",
-						"title": "About...",
+						"title": "关于...",
 						"registerFn": "about"
 					}
 				]
@@ -129,16 +129,16 @@
 		"footprint": [
 			{
 				"id": "importFolderFootprint",
-				"title": "Load Project/Library Folder",
+				"title": "加载工程/库文件夹",
 				"menuItems": [
 					{
 						"id": "importFolderFootprintOpen",
-						"title": "Import from Folder...",
+						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
 					},
 					{
 						"id": "importFolderFootprintAbout",
-						"title": "About...",
+						"title": "关于...",
 						"registerFn": "about"
 					}
 				]
@@ -147,16 +147,16 @@
 		"pcbView": [
 			{
 				"id": "importFolderPcbView",
-				"title": "Load Project/Library Folder",
+				"title": "加载工程/库文件夹",
 				"menuItems": [
 					{
 						"id": "importFolderPcbViewOpen",
-						"title": "Import from Folder...",
+						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
 					},
 					{
 						"id": "importFolderPcbViewAbout",
-						"title": "About...",
+						"title": "关于...",
 						"registerFn": "about"
 					}
 				]
@@ -165,16 +165,16 @@
 		"panel": [
 			{
 				"id": "importFolderPanel",
-				"title": "Load Project/Library Folder",
+				"title": "加载工程/库文件夹",
 				"menuItems": [
 					{
 						"id": "importFolderPanelOpen",
-						"title": "Import from Folder...",
+						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
 					},
 					{
 						"id": "importFolderPanelAbout",
-						"title": "About...",
+						"title": "关于...",
 						"registerFn": "about"
 					}
 				]
@@ -183,16 +183,16 @@
 		"panelView": [
 			{
 				"id": "importFolderPanelView",
-				"title": "Load Project/Library Folder",
+				"title": "加载工程/库文件夹",
 				"menuItems": [
 					{
 						"id": "importFolderPanelViewOpen",
-						"title": "Import from Folder...",
+						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
 					},
 					{
 						"id": "importFolderPanelViewAbout",
-						"title": "About...",
+						"title": "关于...",
 						"registerFn": "about"
 					}
 				]
