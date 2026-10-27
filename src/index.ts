@@ -13,7 +13,6 @@
  *
  * 开发文档 / Docs: https://prodocs.lceda.cn/cn/api/guide/
  */
-import extensionConfig from '../extension.json' with { type: 'json' };
 
 /** 弹窗 ID / Dialog iframe id */
 const FRAME_ID = 'importFolderDialog';
@@ -147,17 +146,4 @@ export async function openImportFolderDialog(): Promise<void> {
 			eda.sys_I18n.text('Failed to open the import dialog: ${1}', undefined, undefined, String(err)),
 		);
 	}
-}
-
-/** 关于 / About */
-export async function about(): Promise<void> {
-	await eda.sys_Dialog.showInformationMessage(
-		eda.sys_I18n.text(
-			'Load Project/Library Folder v${1}: import .epro2 projects and .elibz2 libraries directly from unzipped folders.',
-			undefined,
-			undefined,
-			extensionConfig.version,
-		),
-		eda.sys_I18n.text('About'),
-	);
 }

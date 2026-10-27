@@ -48,6 +48,13 @@ Because the archive is **never written to disk**, it is never re-encrypted, so E
 
 ## Usage
 
+### Prepare: get your folders ready
+
+1. **Download** projects (`.epro2`) or libraries (`.elibz2`) to your computer — the
+   [Export Design Archive](https://jlc-ext.com/item/oshwhub/export-design-archive) extension can batch export them.
+2. **Extract** every project/library archive into its own folder.
+3. **Pick the top-level folder** when importing — every project and library inside is detected automatically.
+
 ### 1. Open the dialog
 
 Menu: **Load Project/Library Folder → Import from Folder...**

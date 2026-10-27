@@ -1,5 +1,5 @@
 {
-	"name": "import-folder-to-easyeda",
+	"name": "import-project-library-folder",
 	"uuid": "d4f7a1c2b9e84a6d8f320c5b7e1a9d63",
 	"displayName": "加载工程/库文件夹",
 	"description": "直接从未解压的文件夹导入嘉立创EDA专业版工程（.epro2）与库（.elibz2）。扩展会遍历文件夹树、自动识别嵌套的工程 / 库文件夹，在内存中重新打包后走官方导入流程——全程不写入本地磁盘，因此本地文件被加密系统（DLP）保护、压缩包无法直接导入的客户端也能正常加载自己的设计。",
@@ -45,11 +45,6 @@
 						"id": "importFolderHomeOpen",
 						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
-					},
-					{
-						"id": "importFolderHomeAbout",
-						"title": "关于...",
-						"registerFn": "about"
 					}
 				]
 			}
@@ -63,11 +58,6 @@
 						"id": "importFolderBlankOpen",
 						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
-					},
-					{
-						"id": "importFolderBlankAbout",
-						"title": "关于...",
-						"registerFn": "about"
 					}
 				]
 			}
@@ -81,11 +71,6 @@
 						"id": "importFolderSchOpen",
 						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
-					},
-					{
-						"id": "importFolderSchAbout",
-						"title": "关于...",
-						"registerFn": "about"
 					}
 				]
 			}
@@ -99,11 +84,6 @@
 						"id": "importFolderSymbolOpen",
 						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
-					},
-					{
-						"id": "importFolderSymbolAbout",
-						"title": "关于...",
-						"registerFn": "about"
 					}
 				]
 			}
@@ -117,11 +97,6 @@
 						"id": "importFolderPcbOpen",
 						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
-					},
-					{
-						"id": "importFolderPcbAbout",
-						"title": "关于...",
-						"registerFn": "about"
 					}
 				]
 			}
@@ -135,11 +110,6 @@
 						"id": "importFolderFootprintOpen",
 						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
-					},
-					{
-						"id": "importFolderFootprintAbout",
-						"title": "关于...",
-						"registerFn": "about"
 					}
 				]
 			}
@@ -153,11 +123,6 @@
 						"id": "importFolderPcbViewOpen",
 						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
-					},
-					{
-						"id": "importFolderPcbViewAbout",
-						"title": "关于...",
-						"registerFn": "about"
 					}
 				]
 			}
@@ -171,11 +136,6 @@
 						"id": "importFolderPanelOpen",
 						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
-					},
-					{
-						"id": "importFolderPanelAbout",
-						"title": "关于...",
-						"registerFn": "about"
 					}
 				]
 			}
@@ -189,11 +149,6 @@
 						"id": "importFolderPanelViewOpen",
 						"title": "从文件夹导入工程 / 库...",
 						"registerFn": "openImportFolderDialog"
-					},
-					{
-						"id": "importFolderPanelViewAbout",
-						"title": "关于...",
-						"registerFn": "about"
 					}
 				]
 			}

@@ -351,6 +351,74 @@
 				background: var(--err-soft);
 			}
 
+			/* ---------- usage guide ---------- */
+			.guide {
+				display: flex;
+				flex-direction: column;
+				gap: 6px;
+				flex: none;
+				margin-top: 12px;
+				padding: 12px 15px 13px;
+				list-style: none;
+				border-radius: 12px;
+				background: #fff;
+				border: 1px solid var(--line);
+				box-shadow: var(--shadow-sm);
+			}
+
+			.guide-title {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				margin-bottom: 1px;
+				font-size: 12px;
+				font-weight: 600;
+				color: var(--ink-2);
+			}
+
+			.guide-title svg {
+				width: 13px;
+				height: 13px;
+				color: var(--accent);
+				flex: none;
+			}
+
+			.guide li {
+				display: flex;
+				align-items: flex-start;
+				gap: 8px;
+				font-size: 11.5px;
+				line-height: 1.6;
+				color: var(--ink-2);
+			}
+
+			.guide li .num {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				flex: none;
+				width: 16px;
+				height: 16px;
+				margin-top: 1px;
+				border-radius: 50%;
+				background: var(--accent-soft);
+				color: var(--accent);
+				font-size: 10px;
+				font-weight: 600;
+			}
+
+			.guide a {
+				color: var(--accent);
+				text-decoration: none;
+				border-bottom: 1px solid rgba(79, 107, 255, 0.35);
+				cursor: pointer;
+			}
+
+			.guide a:hover {
+				color: var(--accent-2);
+				border-bottom-color: var(--accent-2);
+			}
+
 			/* ---------- generic ---------- */
 			.btn {
 				display: inline-flex;
@@ -388,8 +456,11 @@
 				box-shadow: 0 6px 16px rgba(79, 107, 255, 0.26);
 			}
 
+			/* 主按钮 hover 需要重新声明 background：否则会被 .btn:hover 的浅色底覆盖，
+			   白色文字压在浅色背景上就看不见了。 */
 			.btn-primary:hover:not(:disabled) {
 				color: #fff;
+				background: linear-gradient(120deg, var(--accent), var(--accent-2));
 				filter: brightness(1.06);
 				box-shadow: 0 8px 20px rgba(79, 107, 255, 0.34);
 			}
@@ -1143,6 +1214,31 @@
 							</button>
 						</div>
 					</div>
+					<ol class="guide" id="guide">
+						<li class="guide-title">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+								<circle cx="12" cy="12" r="8.5"></circle>
+								<path d="M12 11v5.2"></path>
+								<path d="M12 7.9h.01"></path>
+							</svg>
+							<span data-i18n="How to use">使用说明</span>
+						</li>
+						<li>
+							<span class="num">1</span>
+							<span>
+								<span data-i18n="Download projects (.epro2) or libraries (.elibz2) to your computer in EasyEDA first, then use the Export Design Archive extension:">先在 EDA 中把工程（epro2）或库（elibz2）批量下载到本地，可使用扩展</span>
+								<a id="link-export-archive" href="https://jlc-ext.com/item/oshwhub/export-design-archive" data-i18n="Export Design Archive">导出设计压缩包</a>
+							</span>
+						</li>
+						<li>
+							<span class="num">2</span>
+							<span data-i18n="Extract all the project and library archives into separate folders">把工程与库压缩包批量解压到单独的文件夹中</span>
+						</li>
+						<li>
+							<span class="num">3</span>
+							<span data-i18n="Pick that top-level folder to import - every project and library inside is detected automatically">选择这个顶层文件夹导入，扩展会自动识别其中所有工程与库</span>
+						</li>
+					</ol>
 				</section>
 
 				<!-- ============ step 2: review ============ -->
@@ -1356,8 +1452,6 @@
 					"${1} succeeded, ${2} failed": "成功 ${1} 个，失败 ${2} 个",
 					"${1} symbols": "${1} 个符号",
 					"A project folder contains project2.json (*.epru), a library folder contains device2.json (*.elibu).": "工程文件夹包含 project2.json（及 *.epru），库文件夹包含 device2.json（及 *.elibu）。",
-					"About": "关于",
-					"About...": "关于...",
 					"Analyzing folder structure...": "正在分析文件夹结构...",
 					"Archive": "压缩包",
 					"Back": "上一步",
@@ -1371,9 +1465,13 @@
 					"Drag & drop a folder here": "把文件夹拖到这里",
 					"EasyEDA rejected the package \"${1}\"": "嘉立创EDA 拒绝了压缩包「${1}」",
 					"Everything is packed in memory, nothing is written to disk": "全程内存打包，不写入本地磁盘",
+					"How to use": "使用说明",
+					"Download projects (.epro2) or libraries (.elibz2) to your computer in EasyEDA first, then use the Export Design Archive extension:": "先在 EDA 中把工程（epro2）或库（elibz2）批量下载到本地，可使用扩展",
+					"Export Design Archive": "导出设计压缩包",
+					"Extract all the project and library archives into separate folders": "把工程与库压缩包批量解压到单独的文件夹中",
+					"Pick that top-level folder to import - every project and library inside is detected automatically": "选择这个顶层文件夹导入，扩展会自动识别其中所有工程与库",
 					"Failed": "导入失败",
 					"Failed to analyze the folder: ${1}": "文件夹分析失败：${1}",
-					"Failed to open the import dialog: ${1}": "打开导入弹窗失败：${1}",
 					"Failed to read the folder: ${1}": "读取文件夹失败：${1}",
 					"Files": "文件",
 					"Import": "导入",
@@ -1381,13 +1479,11 @@
 					"Import destination": "导入归属",
 					"Import failed": "导入失败",
 					"Import finished with errors": "导入结束（部分失败）",
-					"Import from Folder...": "从文件夹导入工程 / 库...",
 					"Imported": "导入成功",
 					"Importing \"${1}\"": "正在导入「${1}」",
 					"Importing...": "正在导入...",
 					"Library": "库",
 					"Load Project/Library Folder": "加载工程/库文件夹",
-					"Load Project/Library Folder v${1}: import .epro2 projects and .elibz2 libraries directly from unzipped folders.": "加载工程/库文件夹 v${1}：直接从未解压的文件夹导入 .epro2 工程与 .elibz2 库。",
 					"Loading folders...": "正在读取目录...",
 					"Nested project and library folders are detected automatically": "自动识别多层嵌套的工程 / 库文件夹",
 					"No project or library folder detected": "没有识别到工程或库文件夹",
@@ -2780,6 +2876,31 @@
 					$('btn-cancel').addEventListener('click', function () {
 						closeDialog();
 					});
+
+					// 使用说明里的外链：优先用 EDA 的打开接口交给系统浏览器，失败再退回 window.open
+					var guideLink = $('link-export-archive');
+					if (guideLink) {
+						guideLink.addEventListener('click', function (event) {
+							event.preventDefault();
+							event.stopPropagation();
+							var url = guideLink.getAttribute('href');
+							try {
+								if (EDA && EDA.sys_Window && typeof EDA.sys_Window.open === 'function') {
+									EDA.sys_Window.open(url);
+									return;
+								}
+							}
+							catch (err) {
+								console.warn('[ImportFolder] sys_Window.open failed:', err);
+							}
+							try {
+								window.open(url, '_blank');
+							}
+							catch (err) {
+								console.warn('[ImportFolder] window.open failed:', err);
+							}
+						});
+					}
 				}
 
 				async function browseFolder() {
