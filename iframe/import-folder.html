@@ -1078,17 +1078,17 @@
 					</svg>
 				</div>
 				<div class="hero-text">
-					<div class="hero-title" id="hero-title">Load Project/Library Folder</div>
-					<div class="hero-sub" id="hero-sub"></div>
+					<div class="hero-title" id="hero-title">加载工程/库文件夹</div>
+					<div class="hero-sub" id="hero-sub">工程（.epro2）与库（.elibz2）全程在内存中打包，加密文件不再阻断导入。</div>
 				</div>
 			</div>
 
 			<div class="steps">
-				<div class="step-chip active" data-step="pick"><span class="idx">1</span><span data-i18n="Pick folder"></span></div>
+				<div class="step-chip active" data-step="pick"><span class="idx">1</span><span data-i18n="Pick folder">选择文件夹</span></div>
 				<div class="step-arrow"></div>
-				<div class="step-chip" data-step="review"><span class="idx">2</span><span data-i18n="Choose owner"></span></div>
+				<div class="step-chip" data-step="review"><span class="idx">2</span><span data-i18n="Choose owner">设置归属</span></div>
 				<div class="step-arrow"></div>
-				<div class="step-chip" data-step="run"><span class="idx">3</span><span data-i18n="Import"></span></div>
+				<div class="step-chip" data-step="run"><span class="idx">3</span><span data-i18n="Import">导入</span></div>
 			</div>
 
 			<main>
@@ -1102,15 +1102,30 @@
 								<path d="M10 13.3 12 15.3l2-2"></path>
 							</svg>
 						</div>
-						<div class="dz-title" id="dz-title"></div>
-						<div class="dz-or" id="dz-or"></div>
+						<div class="dz-title" id="dz-title">把文件夹拖到这里</div>
+						<div class="dz-or" id="dz-or">或者</div>
 						<button class="btn" id="btn-browse" type="button">
 							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
 								<path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.4h9A1.5 1.5 0 0 1 21 10v7.5A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5z"></path>
 							</svg>
-							<span data-i18n="Browse Folder..."></span>
+							<span data-i18n="Browse Folder...">打开系统文件夹...</span>
 						</button>
-						<div class="dz-hints" id="dz-hints"></div>
+						<div class="dz-hints" id="dz-hints">
+							<span class="dz-hint">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M12 3.2l7 2.6v5.4c0 4.3-2.8 7.4-7 9.6-4.2-2.2-7-5.3-7-9.6V5.8z"></path>
+									<path d="M9.2 12.1l2 2 3.6-3.8"></path>
+								</svg>
+								自动识别多层嵌套的工程 / 库文件夹
+							</span>
+							<span class="dz-hint">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M12 3.2l7 2.6v5.4c0 4.3-2.8 7.4-7 9.6-4.2-2.2-7-5.3-7-9.6V5.8z"></path>
+									<path d="M9.2 12.1l2 2 3.6-3.8"></path>
+								</svg>
+								全程内存打包，不写入本地磁盘
+							</span>
+						</div>
 						<div class="dz-picked" id="dz-picked">
 							<div class="dz-picked-icon">
 								<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -1135,11 +1150,11 @@
 					<div class="review">
 						<div class="panel">
 							<div class="panel-head">
-								<span class="panel-title" data-i18n="Detected content"></span>
+								<span class="panel-title" data-i18n="Detected content">已识别内容</span>
 								<span class="panel-count" id="unit-count">0</span>
 								<div class="footer-spacer"></div>
 								<button class="btn btn-ghost" id="btn-select-all" type="button" style="height: 26px; padding: 0 9px; font-size: 11.5px">
-									<span data-i18n="Select all"></span>
+									<span data-i18n="Select all">全选</span>
 								</button>
 							</div>
 							<div class="panel-body" id="unit-list"></div>
@@ -1147,17 +1162,17 @@
 
 						<div class="panel">
 							<div class="panel-head">
-								<span class="panel-title" data-i18n="Import destination"></span>
+								<span class="panel-title" data-i18n="Import destination">导入归属</span>
 							</div>
 							<div class="form">
 								<div class="field">
-									<label for="owner-team" data-i18n="Workspace / Team"></label>
+									<label for="owner-team" data-i18n="Workspace / Team">工作区 / 团队</label>
 									<div class="select-wrap">
 										<select id="owner-team"></select>
 									</div>
 								</div>
 								<div class="field">
-									<label for="owner-folder" data-i18n="Destination folder"></label>
+									<label for="owner-folder" data-i18n="Destination folder">目标目录</label>
 									<div class="select-wrap">
 										<select id="owner-folder"></select>
 									</div>
@@ -1166,11 +1181,11 @@
 								<div class="divider"></div>
 								<label class="switch-row">
 									<input type="checkbox" id="opt-open" checked />
-									<span data-i18n="Open the imported project when finished"></span>
+									<span data-i18n="Open the imported project when finished">导入完成后自动打开工程</span>
 								</label>
 								<label class="switch-row">
 									<input type="checkbox" id="opt-device" checked />
-									<span data-i18n="Create devices for single symbols in libraries"></span>
+									<span data-i18n="Create devices for single symbols in libraries">库中单个符号自动创建器件</span>
 								</label>
 							</div>
 						</div>
@@ -1210,9 +1225,9 @@
 			<footer>
 				<div class="footer-info" id="footer-info"></div>
 				<div class="footer-spacer"></div>
-				<button class="btn" id="btn-back" type="button"><span data-i18n="Back"></span></button>
-				<button class="btn" id="btn-cancel" type="button"><span data-i18n="Cancel"></span></button>
-				<button class="btn btn-primary" id="btn-next" type="button"><span data-i18n="Import"></span></button>
+				<button class="btn" id="btn-back" type="button"><span data-i18n="Back">上一步</span></button>
+				<button class="btn" id="btn-cancel" type="button"><span data-i18n="Cancel">取消</span></button>
+				<button class="btn btn-primary" id="btn-next" type="button"><span data-i18n="Import">导入</span></button>
 			</footer>
 		</div>
 
@@ -1246,20 +1261,77 @@
 					EDA = null;
 				}
 
-				function t(key) {
-					var args = Array.prototype.slice.call(arguments, 1);
-					var text = key;
+				/**
+				 * 当前语言。boot 时通过 resolveLanguage() 探测，默认按中文（本扩展主要面向中文用户）。
+				 * Current UI language, resolved on boot; defaults to Chinese.
+				 */
+				var currentLanguage = 'zh-Hans';
+
+				function isChineseLanguage(language) {
+					return String(language || '').toLowerCase().indexOf('zh') === 0;
+				}
+
+				function resolveLanguage() {
+					var applyNavigator = function () {
+						var nav = '';
+						try {
+							nav = navigator.language || navigator.userLanguage || '';
+						}
+						catch (err) {
+							nav = '';
+						}
+						if (nav) {
+							currentLanguage = nav;
+						}
+					};
+
 					try {
-						if (EDA && EDA.sys_I18n && typeof EDA.sys_I18n.text === 'function') {
-							var translated = EDA.sys_I18n.text.apply(null, [key, undefined, undefined].concat(args));
-							if (translated) {
-								text = translated;
-							}
+						if (EDA && EDA.sys_I18n && typeof EDA.sys_I18n.getCurrentLanguage === 'function') {
+							return Promise.resolve(EDA.sys_I18n.getCurrentLanguage()).then(function (language) {
+								if (language) {
+									currentLanguage = language;
+								}
+								else {
+									applyNavigator();
+								}
+							}, applyNavigator);
 						}
 					}
 					catch (err) {
-						// fall back to the English key
+						// ignore and use the navigator language
 					}
+
+					applyNavigator();
+					return Promise.resolve();
+				}
+
+				/**
+				 * 取文案：中文优先用弹窗内置字典（不依赖 sys_I18n），其它语言再交给 sys_I18n。
+				 * Looks up UI copy: Chinese comes from the inline dictionary, other languages fall back to sys_I18n.
+				 */
+				function t(key) {
+					var args = Array.prototype.slice.call(arguments, 1);
+					var text = key;
+
+					if (isChineseLanguage(currentLanguage)) {
+						if (I18N_ZH && Object.prototype.hasOwnProperty.call(I18N_ZH, key)) {
+							text = I18N_ZH[key];
+						}
+					}
+					else {
+						try {
+							if (EDA && EDA.sys_I18n && typeof EDA.sys_I18n.text === 'function') {
+								var translated = EDA.sys_I18n.text(key);
+								if (translated && translated !== key) {
+									text = translated;
+								}
+							}
+						}
+						catch (err) {
+							// keep the English key
+						}
+					}
+
 					if (args.length) {
 						text = text.replace(/\$\{(\d+)\}/g, function (match, index) {
 							var value = args[Number(index) - 1];
@@ -1269,6 +1341,78 @@
 					return text;
 				}
 
+				// ---------------------------------------------------------------- translations
+				// 弹窗内联中英文案：不依赖 sys_I18n 是否在 iframe 内可用，保证中文环境一定显示中文。
+				// Inline translations: the dialog must stay readable even when sys_I18n is unavailable.
+				var I18N_ZH = {
+					"${1} / ${2}": "${1} / ${2}",
+					"${1} devices": "${1} 个器件",
+					"${1} files": "${1} 个文件",
+					"${1} files ready": "已选择 ${1} 个文件",
+					"${1} files, ${2}": "${1} 个文件，共 ${2}",
+					"${1} folders in this workspace": "该工作区共 ${1} 个目录",
+					"${1} footprints": "${1} 个封装",
+					"${1} selected": "已选中 ${1} 项",
+					"${1} succeeded, ${2} failed": "成功 ${1} 个，失败 ${2} 个",
+					"${1} symbols": "${1} 个符号",
+					"A project folder contains project2.json (*.epru), a library folder contains device2.json (*.elibu).": "工程文件夹包含 project2.json（及 *.epru），库文件夹包含 device2.json（及 *.elibu）。",
+					"About": "关于",
+					"About...": "关于...",
+					"Analyzing folder structure...": "正在分析文件夹结构...",
+					"Archive": "压缩包",
+					"Back": "上一步",
+					"Browse Folder...": "打开系统文件夹...",
+					"Cancel": "取消",
+					"Choose owner": "设置归属",
+					"Close": "关闭",
+					"Create devices for single symbols in libraries": "库中单个符号自动创建器件",
+					"Destination folder": "目标目录",
+					"Detected content": "已识别内容",
+					"Drag & drop a folder here": "把文件夹拖到这里",
+					"EasyEDA rejected the package \"${1}\"": "嘉立创EDA 拒绝了压缩包「${1}」",
+					"Everything is packed in memory, nothing is written to disk": "全程内存打包，不写入本地磁盘",
+					"Failed": "导入失败",
+					"Failed to analyze the folder: ${1}": "文件夹分析失败：${1}",
+					"Failed to open the import dialog: ${1}": "打开导入弹窗失败：${1}",
+					"Failed to read the folder: ${1}": "读取文件夹失败：${1}",
+					"Files": "文件",
+					"Import": "导入",
+					"Import completed": "导入完成",
+					"Import destination": "导入归属",
+					"Import failed": "导入失败",
+					"Import finished with errors": "导入结束（部分失败）",
+					"Import from Folder...": "从文件夹导入工程 / 库...",
+					"Imported": "导入成功",
+					"Importing \"${1}\"": "正在导入「${1}」",
+					"Importing...": "正在导入...",
+					"Library": "库",
+					"Load Project/Library Folder": "加载工程/库文件夹",
+					"Load Project/Library Folder v${1}: import .epro2 projects and .elibz2 libraries directly from unzipped folders.": "加载工程/库文件夹 v${1}：直接从未解压的文件夹导入 .epro2 工程与 .elibz2 库。",
+					"Loading folders...": "正在读取目录...",
+					"Nested project and library folders are detected automatically": "自动识别多层嵌套的工程 / 库文件夹",
+					"No project or library folder detected": "没有识别到工程或库文件夹",
+					"No project or library folder detected.": "没有识别到工程或库文件夹。",
+					"No workspace found": "未获取到工作区",
+					"Open the imported project when finished": "导入完成后自动打开工程",
+					"or": "或者",
+					"Packing ${1} / ${2}": "正在打包 ${1} / ${2}",
+					"Personal library": "个人库",
+					"Pick a folder to start": "请先选择一个文件夹",
+					"Pick folder": "选择文件夹",
+					"Project": "工程",
+					"Projects (.epro2) and libraries (.elibz2) are packed in memory, so encrypted files never block the import.": "工程（.epro2）与库（.elibz2）全程在内存中打包，加密文件不再阻断导入。",
+					"Projects are imported into the root directory of the selected workspace.": "工程与库将导入到所选工作区的根目录。",
+					"Reading workspace information...": "正在读取工作区信息...",
+					"Root directory of the team": "团队根目录",
+					"Select all": "全选",
+					"Start import": "开始导入",
+					"The EasyEDA API is not available. Please use this extension inside EasyEDA Pro.": "未检测到嘉立创EDA API，请在嘉立创EDA专业版客户端中使用本扩展。",
+					"The selected folder is empty.": "所选文件夹为空。",
+					"This folder contains a huge number of files (${1}). Analysis may take a while.": "该文件夹文件数量很多（${1} 个），分析可能需要一些时间。",
+					"Waiting": "排队中",
+					"Working...": "处理中...",
+					"Workspace / Team": "工作区 / 团队",
+				};
 				// ---------------------------------------------------------------- icons
 				var ICONS = {
 					project: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h3.6a1.5 1.5 0 0 1 1.2.6l.9 1.2H19.5A1.5 1.5 0 0 1 21 10.3v6.2a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5z"/></svg>',
@@ -2658,18 +2802,26 @@
 					}
 				}
 
-				function boot() {
-					localize();
-					bindEvents();
-					setStep('pick');
-					renderPickedFolder();
-					if (!EDA) {
-						toast(t('The EasyEDA API is not available. Please use this extension inside EasyEDA Pro.'), 'error');
+				async function boot() {
+					try {
+						await resolveLanguage();
+						localize();
+						bindEvents();
+						setStep('pick');
+						renderPickedFolder();
+						if (!EDA) {
+							toast(t('The EasyEDA API is not available. Please use this extension inside EasyEDA Pro.'), 'error');
+						}
+					}
+					catch (err) {
+						console.error('[ImportFolder] initialization failed:', err);
 					}
 				}
 
 				if (document.readyState === 'loading') {
-					document.addEventListener('DOMContentLoaded', boot);
+					document.addEventListener('DOMContentLoaded', function () {
+						boot();
+					});
 				}
 				else {
 					boot();
