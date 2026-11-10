@@ -30,8 +30,8 @@
 	"images": {
 		"logo": "./images/logo.png"
 	},
-	"homepage": "",
-	"bugs": "",
+	"homepage": "https://github.com/easyeda/eext-import-project-library-folder",
+	"bugs": "https://github.com/easyeda/eext-import-project-library-folder/issues",
 	"activationEvents": {},
 	"entry": "./dist/index",
 	"dependentExtensions": {},
